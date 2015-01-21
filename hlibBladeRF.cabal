@@ -11,15 +11,28 @@ license-file:        LICENSE
 author:              Edward O'Callaghan
 maintainer:          eocallaghan@alterapraxis.com
 -- copyright:           
-category:            Development
+category:            FFI
 build-type:          Simple
 -- extra-source-files:  
 cabal-version:       >=1.10
 
 library
-  -- exposed-modules:     
+  exposed-modules:     Bindings.LibBladeRF
+                       Bindings.LibBladeRF.LibBladeRF
+                       Bindings.LibBladeRF.Types
   -- other-modules:       
   -- other-extensions:    
-  build-depends:       base >=4.7 && <4.8
+  extensions:          ForeignFunctionInterface
+  build-depends:       base >=4.7 && <4.8,
+                       bindings-DSL >= 1.0.16 && < 1.1
+  pkgconfig-depends:   libbladeRF >=0.28 && <0.29
   hs-source-dirs:      src
+  c-sources:           src/inlines.c
   default-language:    Haskell2010
+
+
+source-repository head
+  type:                git
+  location:            git://github.com/victoredwardocallaghan/hlibBladeRF
+  branch:              master
+  subdir:              bindings-hlibbladeRF
