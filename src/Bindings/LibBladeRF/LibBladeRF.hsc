@@ -19,7 +19,7 @@ import Bindings.LibBladeRF.Types
 
 #ccall bladerf_close , Ptr (<bladerf>) -> IO ()
 
-#ccall bladerf_set_usb_reset_on_open , CShort -> IO ()
+-- #ccall bladerf_set_usb_reset_on_open , CShort -> IO ()
 
 #ccall bladerf_init_devinfo , Ptr (<bladerf_devinfo>) -> IO ()
 
