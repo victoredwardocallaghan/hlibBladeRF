@@ -3,6 +3,9 @@
 
 module Bindings.LibBladeRF.Types where
 
+#strict_import
+import Foreign.Storable
+
 
 #num BLADERF_ERR_UNEXPECTED
 #num BLADERF_ERR_RANGE
@@ -19,7 +22,9 @@ module Bindings.LibBladeRF.Types where
 #num BLADERF_ERR_UPDATE_FW
 #num BLADERF_ERR_TIME_PAST
 
-#integral_t enum
+#opaque_t bladerf
+
+-- #integral_t enum
 #integral_t bladerf_backend
 #num BLADERF_BACKEND_ANY
 #num BLADERF_BACKEND_LINUX
@@ -27,7 +32,7 @@ module Bindings.LibBladeRF.Types where
 #num BLADERF_BACKEND_CYPRESS
 #num BLADERF_BACKEND_DUMMY
 
-#integral_t enum
+-- #integral_t enum
 #integral_t bladerf_dev_speed
 #num BLADERF_DEVICE_SPEED_UNKNOWN
 #num BLADERF_DEVICE_SPEED_HIGH
@@ -39,10 +44,10 @@ module Bindings.LibBladeRF.Types where
 
 #starttype struct bladerf_devinfo
 #field backend , <bladerf_backend>
-#array_field serial, CChar
-#field usb_bus, Word8
-#field usb_addr, Word8
-#field instance, CInt
+#array_field serial , CChar
+#field usb_bus , Word8
+#field usb_addr , Word8
+#field instance , CUInt
 #stoptype
 
 
@@ -63,7 +68,7 @@ module Bindings.LibBladeRF.Types where
 #num BLADERF_FREQUENCY_MAX
 
 
-#integral_t enum
+-- #integral_t enum
 #integral_t bladerf_loopback
 #num BLADERF_LB_FIRMWARE
 #num BLADERF_LB_BB_TXLPF_RXVGA2
@@ -83,14 +88,14 @@ module Bindings.LibBladeRF.Types where
 #stoptype
 
 
-#integral_t enum
+-- #integral_t enum
 #integral_t bladerf_sampling
 #num BLADERF_SAMPLING_UNKNOWN
 #num BLADERF_SAMPLING_INTERNAL
 #num BLADERF_SAMPLING_EXTERNAL
 
 
-#integral_t enum
+-- #integral_t enum
 #integral_t bladerf_lna_gain
 #num BLADERF_LNA_GAIN_UNKNOWN
 #num BLADERF_LNA_GAIN_BYPASS
@@ -102,27 +107,27 @@ module Bindings.LibBladeRF.Types where
 #num BLADERF_LNA_GAIN_MAX_DB
 
 
-#integral_t enum
+-- #integral_t enum
 #integral_t bladerf_lpf_mode
 #num BLADERF_LPF_NORMAL
 #num BLADERF_LPF_BYPASSED
 #num BLADERF_LPF_DISABLED
 
 
-#integral_t enum
+-- #integral_t enum
 #integral_t bladerf_module
 #num BLADERF_MODULE_RX
 #num BLADERF_MODULE_TX
 
 
-#integral_t enum
+-- #integral_t enum
 #integral_t bladerf_xb
 #num BLADERF_XB_NONE
 #num BLADERF_XB_100
 #num BLADERF_XB_200
 
 
-#integral_t enum
+-- #integral_t enum
 #integral_t bladerf_xb200_filter
 #num BLADERF_XB200_50M
 #num BLADERF_XB200_144M
@@ -132,13 +137,13 @@ module Bindings.LibBladeRF.Types where
 #num BLADERF_XB200_AUTO_3DB
 
 
-#integral_t enum
+-- #integral_t enum
 #integral_t bladerf_xb200_path
 #num BLADERF_XB200_BYPASS
 #num BLADERF_XB200_MIX
 
 
-#integral_t enum
+-- #integral_t enum
 #integral_t bladerf_cal_module
 #num BLADERF_DC_CAL_LPF_TUNING
 #num BLADERF_DC_CAL_TX_LPF
@@ -146,7 +151,7 @@ module Bindings.LibBladeRF.Types where
 #num BLADERF_DC_CAL_RXVGA2
 
 
-#integral_t enum
+-- #integral_t enum
 #integral_t bladerf_correction
 #num BLADERF_CORR_LMS_DCOFF_I
 #num BLADERF_CORR_LMS_DCOFF_Q
@@ -154,7 +159,7 @@ module Bindings.LibBladeRF.Types where
 #num BLADERF_CORR_FPGA_GAIN
 
 
-#integral_t enum
+-- #integral_t enum
 #integral_t bladerf_format
 #num BLADERF_FORMAT_SC16_Q11
 #num BLADERF_FORMAT_SC16_Q11_META
@@ -182,9 +187,9 @@ module Bindings.LibBladeRF.Types where
 #stoptype
 
 
-#num BLADERF_STREAM_SHUTDOWN (NULL)
+-- #num BLADERF_STREAM_SHUTDOWN (NULL)
 
-#num BLADERF_STREAM_NO_DATA  ((void*)(-1))
+-- #num BLADERF_STREAM_NO_DATA  ((void*)(-1))
 
 
 #callback_t bladerf_stream_cb , Ptr() -> Ptr() -> Ptr() -> Ptr() -> CSize -> Ptr() -> IO()
@@ -198,14 +203,14 @@ module Bindings.LibBladeRF.Types where
 #stoptype
 
 
-#integral_t enum
+-- #integral_t enum
 #integral_t bladerf_fpga_size
 #num BLADERF_FPGA_UNKNOWN
 #num BLADERF_FPGA_40KLE
 #num BLADERF_FPGA_115KLE
 
 
-#integral_t enum
+-- #integral_t enum
 #integral_t bladerf_log_level
 #num BLADERF_LOG_LEVEL_VERBOSE
 #num BLADERF_LOG_LEVEL_DEBUG
@@ -216,7 +221,7 @@ module Bindings.LibBladeRF.Types where
 #num BLADERF_LOG_LEVEL_SILENT
 
 
-#integral_t enum
+-- #integral_t enum
 #integral_t bladerf_image_type
 #num BLADERF_IMAGE_TYPE_INVALID
 #num BLADERF_IMAGE_TYPE_RAW
@@ -247,7 +252,21 @@ module Bindings.LibBladeRF.Types where
 #field type , <bladerf_image_type>
 #field address , Word32
 #field length , Word32
-#field data , Ptr
+#field data , Ptr (Word8)
+#stoptype
+
+
+#starttype struct bladerf_lms_dc_cals
+#field lpf_tuning , Word16
+#field tx_lpf_i , Word16
+#field tx_lpf_q , Word16
+#field rx_lpf_i , Word16
+#field rx_lpf_q , Word16
+#field dc_ref , Word16
+#field rxvga2a_i , Word16
+#field rxvga2a_q , Word16
+#field rxvga2b_i , Word16
+#field rxvga2b_q , Word16
 #stoptype
 
 
@@ -268,24 +287,24 @@ module Bindings.LibBladeRF.Types where
 #num BLADERF_FLASH_EB_SIZE
 #num BLADERF_FLASH_NUM_PAGES
 #num BLADERF_FLASH_NUM_EBS
-#num BLADERF_FLASH_TO_PAGES
-#num BLADERF_FLASH_TO_EB
+-- #num BLADERF_FLASH_TO_PAGES
+-- #num BLADERF_FLASH_TO_EB
 #num BLADERF_FLASH_ADDR_FIRMWARE
-#num BLADERF_FLASH_PAGE_FIRMWARE
-#num BLADERF_FLASH_EB_FIRMWARE
+-- #num BLADERF_FLASH_PAGE_FIRMWARE
+-- #num BLADERF_FLASH_EB_FIRMWARE
 #num BLADERF_FLASH_BYTE_LEN_FIRMWARE
-#num BLADERF_FLASH_PAGE_LEN_FIRMWARE
-#num BLADERF_FLASH_EB_LEN_FIRMWARE
+-- #num BLADERF_FLASH_PAGE_LEN_FIRMWARE
+-- #num BLADERF_FLASH_EB_LEN_FIRMWARE
 #num BLADERF_FLASH_ADDR_CAL
-#num BLADERF_FLASH_PAGE_CAL
-#num BLADERF_FLASH_EB_CAL
+-- #num BLADERF_FLASH_PAGE_CAL
+-- #num BLADERF_FLASH_EB_CAL
 #num BLADERF_FLASH_BYTE_LEN_CAL
-#num BLADERF_FLASH_PAGE_LEN_CAL
+-- #num BLADERF_FLASH_PAGE_LEN_CAL
 #num BLADERF_FLASH_EB_LEN_CAL
 
 
 #num BLADERF_FLASH_ADDR_FPGA
-#num BLADERF_FLASH_PAGE_FPGA
-#num BLADERF_FLASH_EB_FPGA
+-- #num BLADERF_FLASH_PAGE_FPGA
+-- #num BLADERF_FLASH_EB_FPGA
 #num BLADERF_FLASH_BYTE_LEN_FPGA
-#num BLADERF_FLASH_EB_LEN_FPGA
+-- #num BLADERF_FLASH_EB_LEN_FPGA

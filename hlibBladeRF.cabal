@@ -22,10 +22,10 @@ library
                        Bindings.LibBladeRF.Types
   -- other-modules:       
   -- other-extensions:    
-  extensions:          ForeignFunctionInterface
+  default-extensions:  ForeignFunctionInterface
   build-depends:       base >=4.7 && <4.8,
                        bindings-DSL >= 1.0.16 && < 1.1
-  pkgconfig-depends:   libbladeRF >=0.28 && <0.29
+  pkgconfig-depends:   libbladeRF >=0.16.2 && <0.17
   hs-source-dirs:      src
   c-sources:           src/inlines.c
   default-language:    Haskell2010
