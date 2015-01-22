@@ -2,16 +2,48 @@
 
 module BladeRFInfo where
 
+-- import LibBladeRF.Utils
 import Foreign
 import Foreign.C.Types
+import Foreign.C.String
+import Foreign.Ptr
 
--- struct bladerf *dev;
--- struct bladerf_devinfo info;
+import Bindings.LibBladeRF
+
+
+-- bladerfGetDevInfo :: IO String
+bladerfGetDevInfo dev = do
+  p <- malloc :: IO (Ptr C'bladerf_devinfo)
+  c'bladerf_get_devinfo dev p
+-- XXX ^ handle status return error with Maybe monad???
+  brfv <- peek p
+  -- XXX decode backend to string??
+  let backend = show . c'bladerf_devinfo'backend $ brfv
+  let serial = map castCCharToChar . c'bladerf_devinfo'serial $ brfv
+  let usb_bus = c'bladerf_devinfo'usb_bus $ brfv
+  let usb_addr = c'bladerf_devinfo'usb_addr $ brfv
+  let inst = c'bladerf_devinfo'instance $ brfv
+  free p
+  return (backend, serial, usb_bus, usb_addr, inst)
+
+openBladeRF = do
+  dev <- malloc :: IO (Ptr (Ptr C'bladerf))
+  c'bladerf_open dev nullPtr
+  pdev <- peek dev
+  return pdev
+
+closeBladeRF dev = c'bladerf_close dev
+
+withBladeRF stuff = do
+  dev <- openBladeRF
+  stuff dev
+  closeBladeRF dev
 
 main :: IO ()
-main  = do
-  status = bladerf_get_devinfo dev &info
-  putStrLn " Serial #: " + info.serial
-  putStrLn " USB bus: " + info.usb_bus);
-  putStrLn " USB address: " + info.usb_addr
-  putStrLn " Instance: " + info.instance
+main  = withBladeRF $ \dev -> do
+  (backend, serial, usb_bus, usb_addr, inst) <- bladerfGetDevInfo dev
+  putStrLn $ " Backend : " ++ backend
+  putStrLn $ " Serial #: " ++ serial
+  putStrLn $ " USB bus: " ++ (show usb_bus)
+  putStrLn $ " USB address: " ++ (show usb_addr)
+  putStrLn $ " Instance: " ++ (show inst)
