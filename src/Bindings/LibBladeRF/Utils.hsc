@@ -18,7 +18,7 @@ import Bindings.LibBladeRF.Types
 
 #ccall bladerf_device_speed , Ptr (<bladerf>) -> <bladerf_dev_speed>
 
-#ccall bladerf_fw_version , Ptr (<bladerf>) -> Ptr (<bladerf_version>) -> CInt
+#ccall bladerf_fw_version , Ptr (<bladerf>) -> Ptr (<bladerf_version>) -> IO (CInt)
 
 -- #ccall bladerf_stderr , CInt -> Ptr (CChar)
 

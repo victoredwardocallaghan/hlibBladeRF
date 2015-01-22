@@ -17,9 +17,9 @@ import Bindings.LibBladeRF.Types
 #ccall bladerf_expansion_gpio_dir_write , Ptr (<bladerf>) -> Word32 -> CInt
 
 
-#ccall bladerf_expansion_get_timestamp , Ptr (<bladerf>) -> <bladerf_module> -> Ptr (Word64) -> CInt
+-- #ccall bladerf_expansion_get_timestamp , Ptr (<bladerf>) -> <bladerf_module> -> Ptr (Word64) -> CInt
 
-#ccall bladerf_expansion_dac_write , Ptr (<bladerf>) -> Word16 -> CInt
+-- #ccall bladerf_expansion_dac_write , Ptr (<bladerf>) -> Word16 -> CInt
 
 #ccall bladerf_xb_spi_write , Ptr (<bladerf>) -> Word32 -> CInt
 
