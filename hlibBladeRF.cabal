@@ -21,6 +21,8 @@ library
                        Bindings.LibBladeRF.LibBladeRF
                        Bindings.LibBladeRF.Utils
                        Bindings.LibBladeRF.Types
+
+                       LibBladeRF.Utils
   -- other-modules:       
   -- other-extensions:    
   default-extensions:  ForeignFunctionInterface
