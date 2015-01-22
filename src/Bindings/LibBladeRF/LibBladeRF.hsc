@@ -32,3 +32,41 @@ import Bindings.LibBladeRF.Types
 #ccall bladerf_devstr_matches , Ptr (CChar) -> Ptr (<bladerf_devinfo>) -> IO (CShort)
 
 #ccall bladerf_backend_str , <bladerf_backend> -> IO (Ptr (CChar))
+
+
+
+-- #ccall bladerf_enable_module , Ptr (<bladerf>) -> <bladerf_module> -> CShort -> CInt
+
+#ccall bladerf_set_loopback , Ptr (<bladerf>) -> <bladerf_loopback> -> CInt
+#ccall bladerf_get_loopback , Ptr (<bladerf>) -> Ptr (<bladerf_loopback>) -> CInt
+
+-- #ccall bladerf_set_sample_rate , Ptr (<bladerf>) -> <bladerf_module> -> CUInt -> Ptr (CUInt) -> CInt
+
+-- #ccall bladerf_set_sample_rate , Ptr (<bladerf>) -> <bladerf_module> -> Ptr (<bladerf_rational_rate>) -> Ptr (<bladerf_rational_rate>) -> CInt
+
+#ccall bladerf_set_sampling , Ptr (<bladerf>) -> <bladerf_sampling> -> CInt
+#ccall bladerf_get_sampling , Ptr (<bladerf>) -> Ptr (<bladerf_sampling>) -> CInt
+
+#ccall bladerf_get_sample_rate , Ptr (<bladerf>) -> <bladerf_module> -> Ptr (CUInt) -> CInt
+#ccall bladerf_get_rational_sample_rate , Ptr (<bladerf>) -> <bladerf_module> -> Ptr (<bladerf_rational_rate>) -> CInt
+
+#ccall bladerf_set_correction , Ptr (<bladerf>) -><bladerf_module> -> <bladerf_correction> -> Word16 -> CInt
+#ccall bladerf_get_correction , Ptr (<bladerf>) -><bladerf_module> -> <bladerf_correction> -> Ptr (Word16) -> CInt
+
+
+#ccall bladerf_set_txvga2 , Ptr (<bladerf>) -> CInt -> CInt
+#ccall bladerf_get_txvga2 , Ptr (<bladerf>) -> Ptr (CInt) -> CInt
+
+#ccall bladerf_set_txvga1 , Ptr (<bladerf>) -> CInt -> CInt
+#ccall bladerf_get_txvga1 , Ptr (<bladerf>) -> Ptr (CInt) -> CInt
+
+#ccall bladerf_set_tx_gain , Ptr (<bladerf>) -> CInt -> CInt
+
+#ccall bladerf_set_lna_gain , Ptr (<bladerf>) -> <bladerf_lna_gain> -> CInt
+#ccall bladerf_get_lna_gain , Ptr (<bladerf>) -> Ptr (<bladerf_lna_gain>) -> CInt
+
+#ccall bladerf_set_rxvga1 , Ptr (<bladerf>) -> CInt -> CInt
+#ccall bladerf_get_rxvga1 , Ptr (<bladerf>) -> Ptr (CInt) -> CInt
+
+#ccall bladerf_set_rxvga2 , Ptr (<bladerf>) -> CInt -> CInt
+#ccall bladerf_get_rxvga2 , Ptr (<bladerf>) -> Ptr (CInt) -> CInt
