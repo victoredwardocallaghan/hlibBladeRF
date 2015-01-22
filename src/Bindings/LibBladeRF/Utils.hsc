@@ -12,8 +12,8 @@ import Bindings.LibBladeRF.Types
 
 
 #ccall bladerf_get_fpga_size , Ptr (<bladerf>) -> Ptr (<bladerf_fpga_size>) -> CInt
-#ccall bladerf_is_fpga_configured , Ptr (<bladerf>) -> CInt
-#ccall bladerf_fpga_version , Ptr (<bladerf>) -> Ptr (<bladerf_version>) -> CInt
+#ccall bladerf_is_fpga_configured , Ptr (<bladerf>) -> IO (CInt)
+#ccall bladerf_fpga_version , Ptr (<bladerf>) -> Ptr (<bladerf_version>) -> IO (CInt)
 
 
 #ccall bladerf_device_speed , Ptr (<bladerf>) -> <bladerf_dev_speed>

@@ -26,3 +26,17 @@ bladeRFFwVersion dev = do
   desc <- peekCString $ c'bladerf_version'describe brfv
   free p
   return desc
+
+
+bladeRFFPGAVersion :: Ptr C'bladerf -> IO String
+bladeRFFPGAVersion dev = do
+  status <- c'bladerf_is_fpga_configured dev
+  if status > 0 then do
+    p <- malloc :: IO (Ptr C'bladerf_version)
+    c'bladerf_fpga_version dev p
+    brfv <- peek p
+    desc <- peekCString $ c'bladerf_version'describe brfv
+    free p
+    return desc
+  else
+    return "Unknown (FPGA not loaded)"
