@@ -22,6 +22,7 @@ library
                        Bindings.LibBladeRF.Utils
                        Bindings.LibBladeRF.Types
 
+                       LibBladeRF.LibBladeRF
                        LibBladeRF.Utils
   -- other-modules:       
   -- other-extensions:    
