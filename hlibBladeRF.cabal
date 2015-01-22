@@ -19,6 +19,7 @@ cabal-version:       >=1.10
 library
   exposed-modules:     Bindings.LibBladeRF
                        Bindings.LibBladeRF.LibBladeRF
+                       Bindings.LibBladeRF.Utils
                        Bindings.LibBladeRF.Types
   -- other-modules:       
   -- other-extensions:    
