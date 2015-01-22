@@ -23,6 +23,7 @@ library
                        Bindings.LibBladeRF.Flash
                        Bindings.LibBladeRF.Si5338
                        Bindings.LibBladeRF.Lms
+                       Bindings.LibBladeRF.Gpio
                        Bindings.LibBladeRF.Types
 
                        LibBladeRF.LibBladeRF
