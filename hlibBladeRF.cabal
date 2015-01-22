@@ -20,6 +20,7 @@ library
   exposed-modules:     Bindings.LibBladeRF
                        Bindings.LibBladeRF.LibBladeRF
                        Bindings.LibBladeRF.Utils
+                       Bindings.LibBladeRF.Flash
                        Bindings.LibBladeRF.Types
 
                        LibBladeRF.LibBladeRF

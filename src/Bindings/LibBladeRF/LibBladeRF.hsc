@@ -70,3 +70,26 @@ import Bindings.LibBladeRF.Types
 
 #ccall bladerf_set_rxvga2 , Ptr (<bladerf>) -> CInt -> CInt
 #ccall bladerf_get_rxvga2 , Ptr (<bladerf>) -> Ptr (CInt) -> CInt
+
+#ccall bladerf_set_gain , Ptr (<bladerf>) -> <bladerf_module> -> CInt -> CInt
+
+#ccall bladerf_set_bandwidth , Ptr (<bladerf>) -> <bladerf_module> -> CUInt -> Ptr (CUInt) -> CInt
+#ccall bladerf_get_bandwidth , Ptr (<bladerf>) -> <bladerf_module> -> Ptr (CUInt) -> CInt
+
+#ccall bladerf_set_lpf_mode , Ptr (<bladerf>) -> <bladerf_module> -> <bladerf_lpf_mode> -> CInt
+#ccall bladerf_get_lpf_mode , Ptr (<bladerf>) -> <bladerf_module> -> Ptr (<bladerf_lpf_mode>) -> CInt
+
+#ccall bladerf_select_band , Ptr (<bladerf>) -> <bladerf_module> -> CUInt -> CInt
+
+#ccall bladerf_set_frequency , Ptr (<bladerf>) -> <bladerf_module> -> CUInt -> CInt
+#ccall bladerf_get_frequency , Ptr (<bladerf>) -> <bladerf_module> -> Ptr (CUInt) -> CInt
+
+#ccall bladerf_expansion_attach , Ptr (<bladerf>) -> <bladerf_xb> -> CInt
+
+#ccall bladerf_expansion_get_attached , Ptr (<bladerf>) -> Ptr (<bladerf_xb>) -> CInt
+
+#ccall bladerf_xb200_set_filterbank , Ptr (<bladerf>) -> <bladerf_module> -> <bladerf_xb200_filter> -> CInt
+#ccall bladerf_xb200_get_filterbank , Ptr (<bladerf>) -> <bladerf_module> -> Ptr (<bladerf_xb200_filter>) -> CInt
+
+#ccall bladerf_xb200_set_path , Ptr (<bladerf>) -> <bladerf_module> -> <bladerf_xb200_path> -> CInt
+#ccall bladerf_xb200_get_path , Ptr (<bladerf>) -> <bladerf_module> -> Ptr (<bladerf_xb200_path>) -> CInt
