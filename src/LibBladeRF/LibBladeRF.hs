@@ -28,14 +28,22 @@ import Control.Exception
 import Bindings.LibBladeRF
 
 -- TODO: Provide error handling??
+-- This is currently crap!
 openBladeRF p = do
   dev <- malloc :: IO (Ptr (Ptr C'bladerf))
-  c'bladerf_open dev p
-  pdev <- peek dev
-  return pdev
+  ret <- c'bladerf_open dev p
+  if ret /= 0 then do
+    free dev
+    putStrLn "Error: cant open device"
+    return nullPtr
+  else do
+    pdev <- peek dev
+    return pdev
 
 closeBladeRF dev = c'bladerf_close dev
 
+-- nullPtr is passed to openBladeRF as the "device string" whatever that is??
+-- passing nullPtr appears to make a probe occur so just use that.
 withBladeRF stuff = bracket (openBladeRF nullPtr) closeBladeRF stuff
 
 
