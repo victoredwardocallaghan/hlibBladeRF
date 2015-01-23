@@ -33,11 +33,37 @@ import Bindings.LibBladeRF
 
 
 --
--- | Fix to correspond with BLADERF_ERR_*
-data BladeRFError = BoardNotFound
+-- | Error codes returned by internal libbladeRF functions.
+data BladeRFError = BLADERF_ERR_UNEXPECTED
+                  | BLADERF_ERR_RANGE
+                  | BLADERF_ERR_INVAL
+                  | BLADERF_ERR_MEM
+                  | BLADERF_ERR_IO
+                  | BLADERF_ERR_TIMEOUT
+                  | BLADERF_ERR_NODEV
+                  | BLADERF_ERR_UNSUPPORTED
+                  | BLADERF_ERR_MISALIGNED
+                  | BLADERF_ERR_CHECKSUM
+                  | BLADERF_ERR_NO_FILE
+                  | BLADERF_ERR_UPDATE_FPGA
+                  | BLADERF_ERR_UPDATE_FW
+                  | BLADERF_ERR_TIME_PAST
 
 instance Show BladeRFError where
-  show BoardNotFound = "No BladeRF board found connected to USB ports"
+  show BLADERF_ERR_UNEXPECTED  = "An unexpected failure occurred"
+  show BLADERF_ERR_RANGE       = "Provided parameter is out of range"
+  show BLADERF_ERR_INVAL       = "Invalid operation/parameter"
+  show BLADERF_ERR_MEM         = "Memory allocation error"
+  show BLADERF_ERR_IO          = "File/Device I/O error"
+  show BLADERF_ERR_TIMEOUT     = "Operation timed out"
+  show BLADERF_ERR_NODEV       = "No device(s) available"
+  show BLADERF_ERR_UNSUPPORTED = "Operation not supported"
+  show BLADERF_ERR_MISALIGNED  = "Misaligned flash access"
+  show BLADERF_ERR_CHECKSUM    = "Invalid checksum"
+  show BLADERF_ERR_NO_FILE     = "File not found"
+  show BLADERF_ERR_UPDATE_FPGA = "An FPGA update is required"
+  show BLADERF_ERR_UPDATE_FW   = "A firmware update is requied"
+  show BLADERF_ERR_TIME_PAST   = "Requested timestamp is in the past"
 
 
 newtype BladeRF a = BladeRF { unBladeRF :: ExceptT BladeRFError (StateT (Ptr C'bladerf) IO) a }
@@ -59,15 +85,16 @@ bracket open close body = do
     close
 
 --
--- | Open specified device using a device identifier string.
---   See bladerf_open_with_devinfo() if a device identifier string
---   is not readily available.
+-- Open specified device using a device identifier string.
+-- See bladerf_open_with_devinfo() if a device identifier string
+-- is not readily available.
 openBladeRF p = do
   dev <- liftIO (malloc :: IO (Ptr (Ptr C'bladerf)))
   ret <- liftIO $ c'bladerf_open dev p
+  -- make into switch or something better?? for more detailed error report
   if ret /= 0 then do
     liftIO $ free dev
-    BladeRF $ throwE BoardNotFound
+    BladeRF $ throwE BLADERF_ERR_NODEV
   else do
     pdev <- liftIO $ peek dev
     BladeRF $ lift (put pdev)
