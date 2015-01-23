@@ -9,8 +9,6 @@
   This module encapsulates misc libbladeRF library functions.
 -}
 
-{-# LANGUAGE ForeignFunctionInterface #-}
-
 module LibBladeRF.Utils ( bladeRFLibVersion
                         , bladeRFFwVersion
                         , bladeRFFPGAVersion
@@ -65,7 +63,7 @@ bladeRFFPGAVersion  = do
     return "Unknown (FPGA not loaded)"
 
 
-bladeRFGetDevInfo :: BladeRF (String, [Char], Word8, Word8, CUInt)
+bladeRFGetDevInfo :: BladeRF (String, String, Word8, Word8, CUInt)
 bladeRFGetDevInfo = do
   p <- liftIO (malloc :: IO (Ptr C'bladerf_devinfo))
   dev <- BladeRF $ lift get
@@ -75,8 +73,8 @@ bladeRFGetDevInfo = do
   -- XXX decode backend to string??
   let backend = show . c'bladerf_devinfo'backend $ brfv
   let serial = map castCCharToChar . c'bladerf_devinfo'serial $ brfv
-  let usb_bus = c'bladerf_devinfo'usb_bus $ brfv
-  let usb_addr = c'bladerf_devinfo'usb_addr $ brfv
-  let inst = c'bladerf_devinfo'instance $ brfv
+  let usb_bus = c'bladerf_devinfo'usb_bus brfv
+  let usb_addr = c'bladerf_devinfo'usb_addr brfv
+  let inst = c'bladerf_devinfo'instance brfv
   liftIO $ free p
   return (backend, serial, usb_bus, usb_addr, inst)

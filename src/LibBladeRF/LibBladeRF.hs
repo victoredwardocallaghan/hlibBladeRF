@@ -12,7 +12,6 @@
   so on.
 -}
 
-{-# LANGUAGE ForeignFunctionInterface #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
 module LibBladeRF.LibBladeRF ( withBladeRF
@@ -46,13 +45,13 @@ newtype BladeRF a = BladeRF { unBladeRF :: ExceptT BladeRFError (StateT (Ptr C'b
 -- instance Applicative BladeRF where
 
 -- runBladeRF = runExceptT . unBladeRF
-runBladeRF m = evalStateT (runExceptT . unBladeRF $ m) (nullPtr)
+runBladeRF m = evalStateT (runExceptT . unBladeRF $ m) nullPtr
 -- XXX change nullPtr to invocate openBladeRF and move over to ReaderT instead of StateT
 
 -- XXX dont rethrow but show the error message with a instance of strings..
 bracket open close body = do
     BladeRF $ catchE (unBladeRF open)
-     (\e -> throwE e)
+     throwE
     BladeRF $ catchE (unBladeRF body)
      (\e -> do unBladeRF close ; throwE e)
     close
@@ -74,4 +73,4 @@ closeBladeRF = (BladeRF $ lift get) >>= liftIO . c'bladerf_close
 -- nullPtr is passed to openBladeRF as the "device string" whatever that is??
 -- passing nullPtr appears to make a probe occur so just use that.
 -- withBladeRF :: IO a -> BladeRF ()
-withBladeRF stuff = runBladeRF $ bracket (openBladeRF nullPtr) (closeBladeRF) (stuff)
+withBladeRF stuff = runBladeRF $ bracket (openBladeRF nullPtr) closeBladeRF stuff

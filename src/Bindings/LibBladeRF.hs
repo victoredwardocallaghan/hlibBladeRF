@@ -1,17 +1,9 @@
-module Bindings.LibBladeRF (
-  module Bindings.LibBladeRF.LibBladeRF,
-  module Bindings.LibBladeRF.Utils,
-  module Bindings.LibBladeRF.Flash,
-  module Bindings.LibBladeRF.Si5338,
-  module Bindings.LibBladeRF.Lms,
-  module Bindings.LibBladeRF.Gpio,
-  module Bindings.LibBladeRF.Types
-  ) where
+module Bindings.LibBladeRF (module X) where
 
-import Bindings.LibBladeRF.LibBladeRF
-import Bindings.LibBladeRF.Utils
-import Bindings.LibBladeRF.Flash
-import Bindings.LibBladeRF.Si5338
-import Bindings.LibBladeRF.Lms
-import Bindings.LibBladeRF.Gpio
-import Bindings.LibBladeRF.Types
+import Bindings.LibBladeRF.LibBladeRF as X
+import Bindings.LibBladeRF.Utils as X
+import Bindings.LibBladeRF.Flash as X
+import Bindings.LibBladeRF.Si5338 as X
+import Bindings.LibBladeRF.Lms as X
+import Bindings.LibBladeRF.Gpio as X
+import Bindings.LibBladeRF.Types as X
