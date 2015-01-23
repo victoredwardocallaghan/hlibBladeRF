@@ -16,7 +16,6 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
 module LibBladeRF.LibBladeRF ( withBladeRF
-                             , bladerfGetDevInfo
                              , BladeRF(..)
                              ) where
 
@@ -76,21 +75,3 @@ closeBladeRF = (BladeRF $ lift get) >>= liftIO . c'bladerf_close
 -- passing nullPtr appears to make a probe occur so just use that.
 -- withBladeRF :: IO a -> BladeRF ()
 withBladeRF stuff = runBladeRF $ bracket (openBladeRF nullPtr) (closeBladeRF) (stuff)
-
-
--- bladerfGetDevInfo :: Ptr C'bladerf -> IO (String, [Char], Word8, Word8, CUInt)
-bladerfGetDevInfo :: BladeRF (String, [Char], Word8, Word8, CUInt)
-bladerfGetDevInfo = do
-  p <- liftIO (malloc :: IO (Ptr C'bladerf_devinfo))
-  dev <- BladeRF $ lift get
-  liftIO $ c'bladerf_get_devinfo dev p
--- XXX ^ handle status return error with Maybe monad???
-  brfv <- liftIO $ peek p
-  -- XXX decode backend to string??
-  let backend = show . c'bladerf_devinfo'backend $ brfv
-  let serial = map castCCharToChar . c'bladerf_devinfo'serial $ brfv
-  let usb_bus = c'bladerf_devinfo'usb_bus $ brfv
-  let usb_addr = c'bladerf_devinfo'usb_addr $ brfv
-  let inst = c'bladerf_devinfo'instance $ brfv
-  liftIO $ free p
-  return (backend, serial, usb_bus, usb_addr, inst)

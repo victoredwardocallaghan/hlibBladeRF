@@ -11,7 +11,11 @@
 
 {-# LANGUAGE ForeignFunctionInterface #-}
 
-module LibBladeRF.Utils where
+module LibBladeRF.Utils ( bladeRFLibVersion
+                        , bladeRFFwVersion
+                        , bladeRFFPGAVersion
+                        , bladeRFGetDevInfo
+                        ) where
 
 import Foreign
 import Foreign.C.Types
@@ -23,6 +27,7 @@ import Control.Monad.IO.Class
 
 import Bindings.LibBladeRF
 import LibBladeRF.LibBladeRF
+
 
 bladeRFLibVersion :: IO String
 bladeRFLibVersion = do
@@ -58,3 +63,20 @@ bladeRFFPGAVersion  = do
     return desc
   else
     return "Unknown (FPGA not loaded)"
+
+
+bladeRFGetDevInfo :: BladeRF (String, [Char], Word8, Word8, CUInt)
+bladeRFGetDevInfo = do
+  p <- liftIO (malloc :: IO (Ptr C'bladerf_devinfo))
+  dev <- BladeRF $ lift get
+  liftIO $ c'bladerf_get_devinfo dev p
+-- XXX ^ handle status return error with Maybe monad???
+  brfv <- liftIO $ peek p
+  -- XXX decode backend to string??
+  let backend = show . c'bladerf_devinfo'backend $ brfv
+  let serial = map castCCharToChar . c'bladerf_devinfo'serial $ brfv
+  let usb_bus = c'bladerf_devinfo'usb_bus $ brfv
+  let usb_addr = c'bladerf_devinfo'usb_addr $ brfv
+  let inst = c'bladerf_devinfo'instance $ brfv
+  liftIO $ free p
+  return (backend, serial, usb_bus, usb_addr, inst)
