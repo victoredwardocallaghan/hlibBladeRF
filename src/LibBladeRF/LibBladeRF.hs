@@ -33,7 +33,12 @@ import Control.Monad.IO.Class
 
 import Bindings.LibBladeRF
 
-data BladeRFError = Success | BoardNotFound
+
+data BladeRFError = BoardNotFound
+
+instance Show BladeRFError where
+  show BoardNotFound = "No BladeRF board found connected to USB ports"
+
 
 newtype BladeRF a = BladeRF { unBladeRF :: ExceptT BladeRFError (StateT (Ptr C'bladerf) IO) a }
 -- newtype BladeRF a = BladeRF { unBladeRF :: ExceptT BladeRFError IO a }
@@ -51,7 +56,6 @@ bracket open close body = do
      (\e -> throwE e)
     BladeRF $ catchE (unBladeRF body)
      (\e -> do unBladeRF close ; throwE e)
-    -- free up memory state inside StateT here?
     close
 
 openBladeRF p = do
