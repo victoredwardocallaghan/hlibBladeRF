@@ -23,21 +23,20 @@ import Foreign.C.Types
 import Foreign.C.String
 import Foreign.Ptr
 
+import Control.Exception
+
 import Bindings.LibBladeRF
 
 -- TODO: Provide error handling??
-openBladeRF = do
+openBladeRF p = do
   dev <- malloc :: IO (Ptr (Ptr C'bladerf))
-  c'bladerf_open dev nullPtr
+  c'bladerf_open dev p
   pdev <- peek dev
   return pdev
 
 closeBladeRF dev = c'bladerf_close dev
 
-withBladeRF stuff = do
-  dev <- openBladeRF
-  stuff dev
-  closeBladeRF dev
+withBladeRF stuff = bracket (openBladeRF nullPtr) closeBladeRF stuff
 
 
 bladerfGetDevInfo :: Ptr C'bladerf -> IO (String, [Char], Word8, Word8, CUInt)
