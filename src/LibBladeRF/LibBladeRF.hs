@@ -41,13 +41,17 @@ newtype BladeRF a = BladeRF { unBladeRF :: ExceptT BladeRFError (StateT (Ptr C'b
 
 -- instance Applicative BladeRF where
 
-runBladeRF = runExceptT . unBladeRF
+-- runBladeRF = runExceptT . unBladeRF
+runBladeRF m = evalStateT (runExceptT . unBladeRF $ m) (nullPtr)
+-- XXX change nullPtr to invocate openBladeRF and move over to ReaderT instead of StateT
 
+-- XXX dont rethrow but show the error message with a instance of strings..
 bracket open close body = do
     BladeRF $ catchE (unBladeRF open)
      (\e -> throwE e)
     BladeRF $ catchE (unBladeRF body)
      (\e -> do unBladeRF close ; throwE e)
+    -- free up memory state inside StateT here?
     close
 
 openBladeRF p = do
@@ -59,7 +63,6 @@ openBladeRF p = do
   else do
     pdev <- liftIO $ peek dev
     BladeRF $ lift (put pdev)
-    return pdev
 
 closeBladeRF = (BladeRF $ lift get) >>= liftIO . c'bladerf_close
 -- closeBladeRF = do dev <- BladeRF $ lift get ; liftIO $ c'bladerf_close dev

@@ -34,7 +34,7 @@ bladeRFLibVersion = do
   return desc
 
 
--- bladeRFFwVersion :: Ptr C'bladerf -> IO String
+bladeRFFwVersion :: BladeRF String
 bladeRFFwVersion = do
   p <- liftIO (malloc :: IO (Ptr C'bladerf_version))
   dev <- BladeRF $ lift get
@@ -45,15 +45,16 @@ bladeRFFwVersion = do
   return desc
 
 
-bladeRFFPGAVersion :: Ptr C'bladerf -> IO String
-bladeRFFPGAVersion dev = do
-  status <- c'bladerf_is_fpga_configured dev
+bladeRFFPGAVersion :: BladeRF String
+bladeRFFPGAVersion  = do
+  dev <- BladeRF $ lift get
+  status <- liftIO $ c'bladerf_is_fpga_configured dev
   if status > 0 then do
-    p <- malloc :: IO (Ptr C'bladerf_version)
-    c'bladerf_fpga_version dev p
-    brfv <- peek p
-    desc <- peekCString $ c'bladerf_version'describe brfv
-    free p
+    p <- liftIO (malloc :: IO (Ptr C'bladerf_version))
+    liftIO $ c'bladerf_fpga_version dev p
+    brfv <- liftIO $ peek p
+    desc <- liftIO $ peekCString $ c'bladerf_version'describe brfv
+    liftIO $ free p
     return desc
   else
     return "Unknown (FPGA not loaded)"
