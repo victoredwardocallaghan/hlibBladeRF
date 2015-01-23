@@ -6,11 +6,12 @@ version:             0.1.0.0
 synopsis:            Haskell binding to libBladeRF SDR library
 description:         Monadic binding for libbladeRF software defined radio.
 homepage:            https://victoredwardocallaghan.github.io/hlibBladeRF
+bug-reports:         https://github.com/victoredwardocallaghan/hlibBladeRF/issues
 license:             LGPL-2.1
 license-file:        LICENSE
 author:              Edward O'Callaghan
 maintainer:          eocallaghan@alterapraxis.com
-copyright:           Edward O'Callaghan
+copyright:           (c) Edward O'Callaghan, 2015
 category:            FFI
 build-type:          Simple
 -- extra-source-files:  
