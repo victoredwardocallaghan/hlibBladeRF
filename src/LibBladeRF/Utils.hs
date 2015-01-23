@@ -1,3 +1,14 @@
+{-|
+  Module      : $Header$
+  Copyright   : (c) 2014 Edward O'Callaghan
+  License     : LGPL-2.1
+  Maintainer  : eocallaghan@alterapraxis.com
+  Stability   : provisional
+  Portability : portable
+
+  This module encapsulates misc libbladeRF library functions.
+-}
+
 {-# LANGUAGE ForeignFunctionInterface #-}
 
 module LibBladeRF.Utils where

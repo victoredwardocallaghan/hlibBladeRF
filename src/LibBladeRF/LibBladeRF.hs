@@ -1,3 +1,16 @@
+{-|
+  Module      : $Header$
+  Copyright   : (c) 2014 Edward O'Callaghan
+  License     : LGPL-2.1
+  Maintainer  : eocallaghan@alterapraxis.com
+  Stability   : provisional
+  Portability : portable
+
+  This module encapsulates the foundational libbladeRF functions
+  commonly used into a Monadic style. This Monadic style avoids
+  passing around references of indirection to the device type and
+  so on.
+-}
 
 {-# LANGUAGE ForeignFunctionInterface #-}
 
