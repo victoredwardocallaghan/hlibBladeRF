@@ -32,6 +32,8 @@ import Control.Monad.IO.Class
 import Bindings.LibBladeRF
 
 
+--
+-- | Fix to correspond with BLADERF_ERR_*
 data BladeRFError = BoardNotFound
 
 instance Show BladeRFError where
@@ -56,6 +58,10 @@ bracket open close body = do
      (\e -> do unBladeRF close ; throwE e)
     close
 
+--
+-- | Open specified device using a device identifier string.
+--   See bladerf_open_with_devinfo() if a device identifier string
+--   is not readily available.
 openBladeRF p = do
   dev <- liftIO (malloc :: IO (Ptr (Ptr C'bladerf)))
   ret <- liftIO $ c'bladerf_open dev p
@@ -66,6 +72,8 @@ openBladeRF p = do
     pdev <- liftIO $ peek dev
     BladeRF $ lift (put pdev)
 
+--
+-- | Close device. Deallocates the memory allocated by openBladeRF when called.
 closeBladeRF = (BladeRF $ lift get) >>= liftIO . c'bladerf_close
 -- closeBladeRF = do dev <- BladeRF $ lift get ; liftIO $ c'bladerf_close dev
 

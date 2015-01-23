@@ -26,7 +26,8 @@ import Control.Monad.IO.Class
 import Bindings.LibBladeRF
 import LibBladeRF.LibBladeRF
 
-
+--
+-- | Get libbladeRF version information
 bladeRFLibVersion :: IO String
 bladeRFLibVersion = do
   p <- malloc :: IO (Ptr C'bladerf_version)
@@ -36,7 +37,8 @@ bladeRFLibVersion = do
   free p
   return desc
 
-
+--
+-- | Query firmware version
 bladeRFFwVersion :: BladeRF String
 bladeRFFwVersion = do
   p <- liftIO (malloc :: IO (Ptr C'bladerf_version))
@@ -47,7 +49,8 @@ bladeRFFwVersion = do
   liftIO $ free p
   return desc
 
-
+--
+-- | Query FPGA version
 bladeRFFPGAVersion :: BladeRF String
 bladeRFFPGAVersion  = do
   dev <- BladeRF $ lift get
@@ -62,7 +65,8 @@ bladeRFFPGAVersion  = do
   else
     return "Unknown (FPGA not loaded)"
 
-
+--
+-- | Fill out a provided bladerf_devinfo structure, given an open device handle.
 bladeRFGetDevInfo :: BladeRF (String, String, Word8, Word8, CUInt)
 bladeRFGetDevInfo = do
   p <- liftIO (malloc :: IO (Ptr C'bladerf_devinfo))
