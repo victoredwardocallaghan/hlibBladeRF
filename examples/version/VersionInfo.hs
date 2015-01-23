@@ -5,11 +5,11 @@ import LibBladeRF.LibBladeRF
 
 import Control.Monad.IO.Class
 
-main :: IO ()
+--main :: IO ()
 main  = withBladeRF $ do
---  libVersion <- bladeRFLibVersion
+  libVersion <- liftIO $ bladeRFLibVersion
   fwVersion <- bladeRFFwVersion
---  fpgaVersion <- bladeRFFPGAVersion dev
---  putStrLn $ " libbladeRF version: " ++ libVersion
-  liftIO (putStrLn $ " Firmware version: " ++ fwVersion)
---  putStrLn $ " FPGA version: " ++ fpgaVersion
+  fpgaVersion <- bladeRFFPGAVersion
+  liftIO . putStrLn $ " libbladeRF version: " ++ libVersion
+  liftIO . putStrLn $ " Firmware version: " ++ fwVersion
+  liftIO . putStrLn $ " FPGA version: " ++ fpgaVersion

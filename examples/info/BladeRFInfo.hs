@@ -7,14 +7,15 @@ import Foreign.C.Types
 import Foreign.C.String
 import Foreign.Ptr
 
+import Control.Monad.IO.Class
+
 import LibBladeRF.LibBladeRF
 
-
-main :: IO ()
-main  = withBladeRF $ \dev -> do
-  (backend, serial, usb_bus, usb_addr, inst) <- bladerfGetDevInfo dev
-  putStrLn $ " Backend : " ++ backend
-  putStrLn $ " Serial #: " ++ serial
-  putStrLn $ " USB bus: " ++ (show usb_bus)
-  putStrLn $ " USB address: " ++ (show usb_addr)
-  putStrLn $ " Instance: " ++ (show inst)
+-- main :: IO ()
+main  = withBladeRF $ do
+  (backend, serial, usb_bus, usb_addr, inst) <- bladerfGetDevInfo
+  liftIO . putStrLn $ " Backend : " ++ backend
+  liftIO . putStrLn $ " Serial #: " ++ serial
+  liftIO . putStrLn $ " USB bus: " ++ (show usb_bus)
+  liftIO . putStrLn $ " USB address: " ++ (show usb_addr)
+  liftIO . putStrLn $ " Instance: " ++ (show inst)
