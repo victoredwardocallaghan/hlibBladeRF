@@ -17,7 +17,12 @@ import Foreign
 import Foreign.C.Types
 import Foreign.C.String
 
+import Control.Monad.Trans
+import Control.Monad.Trans.State
+import Control.Monad.IO.Class
+
 import Bindings.LibBladeRF
+import LibBladeRF.LibBladeRF
 
 bladeRFLibVersion :: IO String
 bladeRFLibVersion = do
@@ -29,13 +34,14 @@ bladeRFLibVersion = do
   return desc
 
 
-bladeRFFwVersion :: Ptr C'bladerf -> IO String
-bladeRFFwVersion dev = do
-  p <- malloc :: IO (Ptr C'bladerf_version)
-  c'bladerf_fw_version dev p
-  brfv <- peek p
-  desc <- peekCString $ c'bladerf_version'describe brfv
-  free p
+-- bladeRFFwVersion :: Ptr C'bladerf -> IO String
+bladeRFFwVersion = do
+  p <- liftIO (malloc :: IO (Ptr C'bladerf_version))
+  dev <- BladeRF $ lift get
+  liftIO $ c'bladerf_fw_version dev p
+  brfv <- liftIO $ peek p
+  desc <- liftIO $ peekCString $ c'bladerf_version'describe brfv
+  liftIO $ free p
   return desc
 
 
