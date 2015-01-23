@@ -23,6 +23,8 @@ import Foreign.C.Types
 import Foreign.C.String
 import Foreign.Ptr
 
+import Control.Applicative (Applicative(..), (<$>))
+import Control.Monad (ap)
 import Control.Monad.Trans
 -- import Control.Monad.Trans.Reader
 import Control.Monad.Trans.State
@@ -70,9 +72,16 @@ newtype BladeRF a = BladeRF { unBladeRF :: ExceptT BladeRFError (StateT (Ptr C'b
 -- newtype BladeRF a = BladeRF { unBladeRF :: ExceptT BladeRFError IO a }
   deriving (Monad, MonadIO)
 
--- instance Applicative BladeRF where
+instance Functor BladeRF where
+  {-# INLINE fmap #-}
+  fmap f m = BladeRF (f <$> unBladeRF m)
 
--- runBladeRF = runExceptT . unBladeRF
+instance Applicative BladeRF where
+  {-# INLINE pure #-}
+  pure  = return
+  {-# INLINE (<*>) #-}
+  (<*>) = ap
+
 runBladeRF m = evalStateT (runExceptT . unBladeRF $ m) nullPtr
 -- XXX change nullPtr to invocate openBladeRF and move over to ReaderT instead of StateT
 
