@@ -11,14 +11,14 @@ import Control.Monad.IO.Class
 
 import LibBladeRF.LibBladeRF
 import LibBladeRF.Utils
+import LibBladeRF.Misc
 
--- main :: IO ()
 main  = withBladeRF $ do
   (backend, serial, usb_bus, usb_addr, inst) <- bladeRFGetDevInfo
-  liftIO . putStrLn $ " Backend : " ++ backend
-  liftIO . putStrLn $ " Serial #: " ++ serial
-  liftIO . putStrLn $ " USB bus: " ++ (show usb_bus)
-  liftIO . putStrLn $ " USB address: " ++ (show usb_addr)
-  liftIO . putStrLn $ " Instance: " ++ (show inst)
+  printBladeRF $ " Backend : " ++ backend
+  printBladeRF $ " Serial #: " ++ serial
+  printBladeRF $ " USB bus: " ++ (show usb_bus)
+  printBladeRF $ " USB address: " ++ (show usb_addr)
+  printBladeRF $ " Instance: " ++ (show inst)
   foo <- bladeRFDeviceSpeed
-  liftIO . putStrLn $ " Device Speed: " ++ (show foo)
+  printBladeRF $ " Device Speed: " ++ (show foo)

@@ -1,15 +1,15 @@
 module VersionInfo where
 
-import LibBladeRF.Utils
-import LibBladeRF.LibBladeRF
-
 import Control.Monad.IO.Class
 
---main :: IO ()
+import LibBladeRF.LibBladeRF
+import LibBladeRF.Utils
+import LibBladeRF.Misc
+
 main  = withBladeRF $ do
   libVersion <- liftIO $ bladeRFLibVersion
   fwVersion <- bladeRFFwVersion
   fpgaVersion <- bladeRFFPGAVersion
-  liftIO . putStrLn $ " libbladeRF version: " ++ libVersion
-  liftIO . putStrLn $ " Firmware version: " ++ fwVersion
-  liftIO . putStrLn $ " FPGA version: " ++ fpgaVersion
+  printBladeRF $ " libbladeRF version: " ++ libVersion
+  printBladeRF $ " Firmware version: " ++ fwVersion
+  printBladeRF $ " FPGA version: " ++ fpgaVersion
