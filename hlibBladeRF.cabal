@@ -47,6 +47,7 @@ library
                        Bindings.LibBladeRF.Types
 
                        LibBladeRF.LibBladeRF
+                       LibBladeRF.Flash
                        LibBladeRF.Utils
                        LibBladeRF.Misc
   -- other-modules:       
