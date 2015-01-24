@@ -20,3 +20,5 @@ main  = withBladeRF $ do
   liftIO . putStrLn $ " USB bus: " ++ (show usb_bus)
   liftIO . putStrLn $ " USB address: " ++ (show usb_addr)
   liftIO . putStrLn $ " Instance: " ++ (show inst)
+  foo <- bladeRFDeviceSpeed
+  liftIO . putStrLn $ " Device Speed: " ++ (show foo)
