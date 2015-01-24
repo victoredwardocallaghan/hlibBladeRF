@@ -12,6 +12,7 @@
 module LibBladeRF.Utils ( bladeRFLibVersion
                         , bladeRFFwVersion
                         , bladeRFFPGAVersion
+                        , bladeRFDeviceSpeed
                         , bladeRFGetDevInfo
                         ) where
 
@@ -64,6 +65,14 @@ bladeRFFPGAVersion  = do
     return desc
   else
     return "Unknown (FPGA not loaded)"
+
+--
+-- | Obtain the bus speed at which the device is operating
+bladeRFDeviceSpeed :: BladeRF Word32
+bladeRFDeviceSpeed  = do
+  dev <- BladeRF $ lift get
+  speed <- liftIO $ c'bladerf_device_speed dev
+  return $ fromIntegral speed
 
 --
 -- | Fill out a provided bladerf_devinfo structure, given an open device handle.
