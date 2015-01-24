@@ -48,6 +48,7 @@ library
 
                        LibBladeRF.LibBladeRF
                        LibBladeRF.Utils
+                       LibBladeRF.Misc
   -- other-modules:       
   -- other-extensions:    
   default-extensions:  ForeignFunctionInterface
