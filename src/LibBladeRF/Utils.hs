@@ -46,19 +46,24 @@ bladeRFLibVersion = do
 
 --
 -- | Query firmware version
-bladeRFFwVersion :: BladeRF String
+bladeRFFwVersion :: BladeRF BladeRFVersion
 bladeRFFwVersion = do
   p <- liftIO (malloc :: IO (Ptr C'bladerf_version))
   dev <- BladeRF $ lift get
   liftIO $ c'bladerf_fw_version dev p
   brfv <- liftIO $ peek p
   desc <- liftIO $ peekCString $ c'bladerf_version'describe brfv
+  let ver = BladeRFVersion { major = c'bladerf_version'major brfv
+                           , minor = c'bladerf_version'minor brfv
+                           , patch = c'bladerf_version'patch brfv
+                           , descr = desc
+                           }
   liftIO $ free p
-  return desc
+  return ver
 
 --
 -- | Query FPGA version
-bladeRFFPGAVersion :: BladeRF String
+bladeRFFPGAVersion :: BladeRF BladeRFVersion
 bladeRFFPGAVersion  = do
   dev <- BladeRF $ lift get
   status <- liftIO $ c'bladerf_is_fpga_configured dev
@@ -67,10 +72,19 @@ bladeRFFPGAVersion  = do
     liftIO $ c'bladerf_fpga_version dev p
     brfv <- liftIO $ peek p
     desc <- liftIO $ peekCString $ c'bladerf_version'describe brfv
+    let ver = BladeRFVersion { major = c'bladerf_version'major brfv
+                             , minor = c'bladerf_version'minor brfv
+                             , patch = c'bladerf_version'patch brfv
+                             , descr = desc
+                             }
     liftIO $ free p
-    return desc
+    return ver
   else
-    return "Unknown (FPGA not loaded)"
+    return    BladeRFVersion { major = 0
+                             , minor = 0
+                             , patch = 0
+                             , descr = "Unknown (FPGA not loaded)"
+                             }
 
 --
 -- | Obtain the bus speed at which the device is operating
