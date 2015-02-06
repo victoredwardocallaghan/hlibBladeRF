@@ -96,7 +96,7 @@ bladeRFDeviceSpeed  = do
 
 --
 -- | Fill out a provided bladerf_devinfo structure, given an open device handle.
-bladeRFGetDevInfo :: BladeRF (String, String, Word8, Word8, CUInt)
+bladeRFGetDevInfo :: BladeRF BladeRFDeviceInfo
 bladeRFGetDevInfo = do
   p <- liftIO (malloc :: IO (Ptr C'bladerf_devinfo))
   dev <- BladeRF $ lift get
@@ -104,10 +104,11 @@ bladeRFGetDevInfo = do
 -- XXX ^ handle status return error with Maybe monad???
   brfv <- liftIO $ peek p
   -- XXX decode backend to string??
-  let backend = show . c'bladerf_devinfo'backend $ brfv
-  let serial = map castCCharToChar . c'bladerf_devinfo'serial $ brfv
-  let usb_bus = c'bladerf_devinfo'usb_bus brfv
-  let usb_addr = c'bladerf_devinfo'usb_addr brfv
-  let inst = c'bladerf_devinfo'instance brfv
+  let info = BladeRFDeviceInfo { backend = show . c'bladerf_devinfo'backend $ brfv
+                               , serial  = map castCCharToChar . c'bladerf_devinfo'serial $ brfv
+                               , usbBus  = c'bladerf_devinfo'usb_bus brfv
+                               , usbAddr = c'bladerf_devinfo'usb_addr brfv
+                               , inst    = c'bladerf_devinfo'instance brfv
+                               }
   liftIO $ free p
-  return (backend, serial, usb_bus, usb_addr, inst)
+  return info

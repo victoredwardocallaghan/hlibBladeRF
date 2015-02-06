@@ -10,6 +10,7 @@
 -}
 
 module LibBladeRF.Types ( BladeRFVersion(..)
+                        , BladeRFDeviceInfo(..)
                         ) where
 
 
@@ -24,3 +25,12 @@ data BladeRFVersion = BladeRFVersion { major :: Word16
                                      , patch :: Word16
                                      , descr :: String
                                      } deriving (Eq, Show)
+
+--
+-- ..
+data BladeRFDeviceInfo = BladeRFDeviceInfo { backend :: String
+                                           , serial  :: String
+                                           , usbBus  :: Word8
+                                           , usbAddr :: Word8
+                                           , inst    :: CUInt
+                                           } deriving (Eq, Show)
