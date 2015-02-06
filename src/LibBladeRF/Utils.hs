@@ -26,17 +26,23 @@ import Control.Monad.IO.Class
 
 import Bindings.LibBladeRF
 import LibBladeRF.LibBladeRF
+import LibBladeRF.Types
 
 --
 -- | Get libbladeRF version information
-bladeRFLibVersion :: IO String
+bladeRFLibVersion :: IO BladeRFVersion
 bladeRFLibVersion = do
   p <- malloc :: IO (Ptr C'bladerf_version)
   c'bladerf_version p
   brfv <- peek p
   desc <- peekCString $ c'bladerf_version'describe brfv
+  let ver = BladeRFVersion { major = c'bladerf_version'major brfv
+                           , minor = c'bladerf_version'minor brfv
+                           , patch = c'bladerf_version'patch brfv
+                           , descr = desc
+                           }
   free p
-  return desc
+  return ver
 
 --
 -- | Query firmware version
