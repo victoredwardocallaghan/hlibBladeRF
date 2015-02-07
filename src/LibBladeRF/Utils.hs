@@ -118,10 +118,10 @@ bladeRFGetDevInfo = do
 -- | Query a device's serial number
 bladeRFGetSerial :: BladeRF String
 bladeRFGetSerial  = do
-  cstring <- liftIO (malloc :: IO CString)
+  cstring <- liftIO (mallocBytes 34) -- device serial is 33 bytes long + null terminating byte.
   dev <- BladeRF $ lift get
---  XXX memory corruption???
---  liftIO $ c'bladerf_get_serial dev cstring
+  -- API bug bladerf_get_serial() should be allocating the buffer itself, not the call site!
+  liftIO $ c'bladerf_get_serial dev cstring
   serial <- liftIO $ peekCString cstring
   liftIO $ free cstring
   return serial
