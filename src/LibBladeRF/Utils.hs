@@ -14,6 +14,8 @@ module LibBladeRF.Utils ( bladeRFLibVersion
                         , bladeRFFPGAVersion
                         , bladeRFDeviceSpeed
                         , bladeRFGetDevInfo
+                        , bladeRFGetSerial
+                        , bladeRFGetFPGASize
                         ) where
 
 import Foreign
@@ -103,8 +105,7 @@ bladeRFGetDevInfo = do
   liftIO $ c'bladerf_get_devinfo dev p
 -- XXX ^ handle status return error with Maybe monad???
   brfv <- liftIO $ peek p
-  -- XXX decode backend to string??
-  let info = BladeRFDeviceInfo { backend = show . c'bladerf_devinfo'backend $ brfv
+  let info = BladeRFDeviceInfo { backend = toEnum . fromEnum . c'bladerf_devinfo'backend $ brfv
                                , serial  = map castCCharToChar . c'bladerf_devinfo'serial $ brfv
                                , usbBus  = c'bladerf_devinfo'usb_bus brfv
                                , usbAddr = c'bladerf_devinfo'usb_addr brfv
@@ -112,3 +113,26 @@ bladeRFGetDevInfo = do
                                }
   liftIO $ free p
   return info
+
+--
+-- | Query a device's serial number
+bladeRFGetSerial :: BladeRF String
+bladeRFGetSerial  = do
+  cstring <- liftIO (malloc :: IO CString)
+  dev <- BladeRF $ lift get
+--  XXX memory corruption???
+--  liftIO $ c'bladerf_get_serial dev cstring
+  serial <- liftIO $ peekCString cstring
+  liftIO $ free cstring
+  return serial
+
+--
+-- | Query a device's FPGA size
+bladeRFGetFPGASize :: BladeRF BladeRFFPGASize
+bladeRFGetFPGASize  = do
+  dev <- BladeRF $ lift get
+  p <- liftIO (malloc :: IO (Ptr C'bladerf_fpga_size))
+  liftIO $ c'bladerf_get_fpga_size dev p
+  sz <- liftIO $ peek p
+  liftIO $ free p
+  return $ (toEnum . fromEnum) sz
