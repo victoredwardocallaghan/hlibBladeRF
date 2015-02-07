@@ -16,10 +16,10 @@ import LibBladeRF.Types
 
 main  = withBladeRF $ do
   info <- bladeRFGetDevInfo
-  printBladeRF $ " Backend : " ++ backend info
-  printBladeRF $ " Serial #: " ++ serial info
-  printBladeRF $ " USB bus: " ++ (show (usbBus info))
-  printBladeRF $ " USB address: " ++ (show (usbAddr info))
-  printBladeRF $ " Instance: " ++ (show (inst info))
+  printBladeRF $ show info
   foo <- bladeRFDeviceSpeed
   printBladeRF $ " Device Speed: " ++ (show foo)
+  serial <- bladeRFGetSerial
+  printBladeRF $ " Device Serial: " ++ serial
+  size <- bladeRFGetFPGASize
+  printBladeRF $ " FPGA Size = " ++ (show size)
