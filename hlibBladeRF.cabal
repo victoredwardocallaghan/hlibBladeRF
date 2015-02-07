@@ -50,6 +50,7 @@ library
                        LibBladeRF.Flash
                        LibBladeRF.Utils
                        LibBladeRF.Misc
+                       LibBladeRF.Types
   -- other-modules:       
   -- other-extensions:    
   default-extensions:  ForeignFunctionInterface
