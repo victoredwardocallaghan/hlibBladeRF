@@ -47,7 +47,10 @@ import Bindings.LibBladeRF.Types
 #ccall bladerf_set_sampling , Ptr (<bladerf>) -> <bladerf_sampling> -> CInt
 #ccall bladerf_get_sampling , Ptr (<bladerf>) -> Ptr (<bladerf_sampling>) -> CInt
 
+#ccall bladerf_set_sample_rate , Ptr (<bladerf>) -> <bladerf_module> -> CUInt -> Ptr (CUInt) -> IO (CInt)
 #ccall bladerf_get_sample_rate , Ptr (<bladerf>) -> <bladerf_module> -> Ptr (CUInt) -> CInt
+
+#ccall bladerf_set_rational_sample_rate , Ptr (<bladerf>) -> <bladerf_module> -> Ptr (<bladerf_rational_rate>) -> Ptr (<bladerf_rational_rate>) -> IO (CInt)
 #ccall bladerf_get_rational_sample_rate , Ptr (<bladerf>) -> <bladerf_module> -> Ptr (<bladerf_rational_rate>) -> CInt
 
 #ccall bladerf_set_correction , Ptr (<bladerf>) -><bladerf_module> -> <bladerf_correction> -> Word16 -> CInt

@@ -13,6 +13,8 @@ module LibBladeRF.Types ( BladeRFVersion(..)
                         , BladeRFDeviceInfo(..)
                         , BladeRFFPGASize(..)
                         , BladeRFBackend(..)
+                        , BladeRFRationalRate(..)
+                        , BladeRFModule(..)
                         ) where
 
 
@@ -100,3 +102,23 @@ backends = [ (BACKEND_ANY, c'BLADERF_BACKEND_ANY)
            , (BACKEND_CYPRESS, c'BLADERF_BACKEND_CYPRESS)
            , (BACKEND_DUMMY, c'BLADERF_BACKEND_DUMMY)
            ]
+
+-- | Rational sample rate representation
+data BladeRFRationalRate = BladeRFRationalRate { integer :: Word64 -- ^ Integer portion
+                                               , num     :: Word64 -- ^ Numerator in fractional portion
+                                               , den     :: Word64 -- ^ Denominator in fractional portion. This must be > 0.
+                                               } deriving (Eq, Show)
+
+
+-- | Module selection for those which have both RX and TX constituents
+data BladeRFModule = MODULE_RX -- ^ Receive Module
+                   | MODULE_TX -- ^ Transmit Module
+                   deriving (Eq)
+
+instance Enum BladeRFModule where
+  fromEnum = fromJust . flip lookup modules
+  toEnum   = fromJust . flip lookup (map swap modules)
+
+modules = [ (MODULE_RX, c'BLADERF_MODULE_RX)
+          , (MODULE_TX, c'BLADERF_MODULE_TX)
+          ]
