@@ -13,6 +13,7 @@ module LibBladeRF.Utils ( bladeRFLibVersion
                         , bladeRFFwVersion
                         , bladeRFFPGAVersion
                         , bladeRFDeviceSpeed
+                        , bladeRFLoadFPGA
                         , bladeRFGetDevInfo
                         , bladeRFGetSerial
                         , bladeRFGetFPGASize
@@ -87,6 +88,18 @@ bladeRFFPGAVersion  = do
                              , patch = 0
                              , descr = "Unknown (FPGA not loaded)"
                              }
+
+
+--
+-- | Load device's FPGA. Note that this FPGA configuration will be reset
+--   at the next power cycle.
+-- @param   fpga        Full path to FPGA bitstream
+bladeRFLoadFPGA :: String -> BladeRF ()
+bladeRFLoadFPGA s = do
+  p <- liftIO $ newCString s
+  dev <- BladeRF $ lift get
+  _ <- liftIO $ c'bladerf_load_fpga dev p
+  return ()
 
 --
 -- | Obtain the bus speed at which the device is operating
