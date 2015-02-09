@@ -15,6 +15,7 @@ module LibBladeRF.Types ( BladeRFVersion(..)
                         , BladeRFBackend(..)
                         , BladeRFRationalRate(..)
                         , BladeRFModule(..)
+                        , BladeRFFormat(..)
                         ) where
 
 
@@ -121,4 +122,18 @@ instance Enum BladeRFModule where
 
 modules = [ (MODULE_RX, c'BLADERF_MODULE_RX)
           , (MODULE_TX, c'BLADERF_MODULE_TX)
+          ]
+
+
+-- | Sample format
+data BladeRFFormat = FORMAT_SC16_Q11
+                   | FORMAT_SC16_Q11_META
+                   deriving (Eq)
+
+instance Enum BladeRFFormat where
+  fromEnum = fromJust . flip lookup formats
+  toEnum   = fromJust . flip lookup (map swap formats)
+
+formats = [ (FORMAT_SC16_Q11, c'BLADERF_FORMAT_SC16_Q11)
+          , (FORMAT_SC16_Q11_META, c'BLADERF_FORMAT_SC16_Q11_META)
           ]
