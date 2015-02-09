@@ -50,6 +50,7 @@ library
                        LibBladeRF.LibBladeRF
                        LibBladeRF.Sampling
                        LibBladeRF.Sync
+                       LibBladeRF.Gpio
                        LibBladeRF.Flash
                        LibBladeRF.Utils
                        LibBladeRF.Misc

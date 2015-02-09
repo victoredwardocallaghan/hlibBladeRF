@@ -7,8 +7,8 @@ module Bindings.LibBladeRF.Gpio where
 import Bindings.LibBladeRF.Types
 
 
-#ccall bladerf_config_gpio_read , Ptr (<bladerf>) -> Ptr (Word32) -> CInt
-#ccall bladerf_config_gpio_write , Ptr (<bladerf>) -> Word32 -> CInt
+#ccall bladerf_config_gpio_read , Ptr (<bladerf>) -> Ptr (Word32) -> IO (CInt)
+#ccall bladerf_config_gpio_write , Ptr (<bladerf>) -> Word32 -> IO (CInt)
 
 #ccall bladerf_expansion_gpio_read , Ptr (<bladerf>) -> Ptr (Word32) -> CInt
 #ccall bladerf_expansion_gpio_write , Ptr (<bladerf>) -> Word32 -> CInt
