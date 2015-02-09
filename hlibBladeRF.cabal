@@ -54,6 +54,7 @@ library
                        LibBladeRF.Gain
                        LibBladeRF.Gpio
                        LibBladeRF.Flash
+                       LibBladeRF.Frequency
                        LibBladeRF.Utils
                        LibBladeRF.Misc
                        LibBladeRF.Types

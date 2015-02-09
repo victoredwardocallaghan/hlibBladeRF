@@ -18,6 +18,7 @@ module LibBladeRF.Types ( BladeRFVersion(..)
                         , BladeRFFormat(..)
                         , BladeRFLNAGain(..)
                         , BladeRFVGAGainBounds(..)
+                        , BladeRFCorrection(..)
                         ) where
 
 
@@ -186,3 +187,33 @@ vgains = [ (RXVGA1_GAIN_MIN, c'BLADERF_RXVGA1_GAIN_MIN)
          , (TXVGA2_GAIN_MIN, c'BLADERF_TXVGA2_GAIN_MIN)
          , (TXVGA2_GAIN_MAX, c'BLADERF_TXVGA2_GAIN_MAX)
          ]
+
+--
+-- | Correction parameter selection
+--
+--   These values specify the correction parameter to modify or query when
+--   calling bladerf_set_correction() or bladerf_get_correction(). Note that the
+--   meaning of the `value` parameter to these functions depends upon the
+--   correction parameter.
+data BladeRFCorrection = CORR_LMS_DCOFF_I -- ^ Adjusts the in-phase DC offset via controls provided by the LMS6002D
+                                          --   front end. Valid values are [-2048, 2048], which are scaled to the
+                                          --   available control bits in the LMS device.
+                       | CORR_LMS_DCOFF_Q -- ^ Adjusts the quadrature DC offset via controls provided the LMS6002D
+                                          --   front end. Valid values are [-2048, 2048], which are scaled to the
+                                          --   available control bits.
+                       | CORR_FPGA_PHASE  -- ^ Adjusts FPGA-based phase correction of [-10, 10] degrees, via a provided
+                                          --   count value of [-4096, 4096].
+                       | CORR_FPGA_GAIN   -- ^ Adjusts FPGA-based gain correction of [0.0, 2.0], via provided
+                                          --   values in the range of [-4096, 4096], where a value of 0 corresponds to
+                                          --   a gain of 1.0.
+                       deriving (Eq)
+
+instance Enum BladeRFCorrection where
+  fromEnum = fromJust . flip lookup corrections
+  toEnum   = fromJust . flip lookup (map swap corrections)
+
+corrections = [ (CORR_LMS_DCOFF_I, c'BLADERF_CORR_LMS_DCOFF_I)
+              , (CORR_LMS_DCOFF_Q, c'BLADERF_CORR_LMS_DCOFF_Q)
+              , (CORR_FPGA_PHASE, c'BLADERF_CORR_FPGA_PHASE)
+              , (CORR_FPGA_GAIN, c'BLADERF_CORR_FPGA_GAIN)
+              ]
