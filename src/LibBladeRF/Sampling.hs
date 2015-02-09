@@ -11,6 +11,7 @@
 
 module LibBladeRF.Sampling ( bladeRFSetSampleRate
                            , bladeRFSetRationalSampleRate
+                           , bladeRFSetBandwidth
                            ) where
 
 import Foreign
@@ -61,3 +62,14 @@ bladeRFSetRationalSampleRate m r = do
   liftIO $ free pr
   liftIO $ free par
   return actual
+
+--
+-- | Set the bandwidth of the LMS LPF to specified value in Hz
+bladeRFSetBandwidth :: BladeRFModule -> Int -> BladeRF Int
+bladeRFSetBandwidth m b = do
+  dev <- BladeRF $ lift get
+  ab <- liftIO (malloc :: IO (Ptr CUInt))
+  liftIO $ c'bladerf_set_bandwidth dev ((fromIntegral . fromEnum) m) (fromIntegral b) ab
+  actual <- liftIO $ peek ab
+  liftIO $ free ab
+  return $ fromIntegral actual

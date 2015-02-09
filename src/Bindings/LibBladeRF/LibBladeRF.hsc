@@ -76,7 +76,7 @@ import Bindings.LibBladeRF.Types
 
 #ccall bladerf_set_gain , Ptr (<bladerf>) -> <bladerf_module> -> CInt -> CInt
 
-#ccall bladerf_set_bandwidth , Ptr (<bladerf>) -> <bladerf_module> -> CUInt -> Ptr (CUInt) -> CInt
+#ccall bladerf_set_bandwidth , Ptr (<bladerf>) -> <bladerf_module> -> CUInt -> Ptr (CUInt) -> IO (CInt)
 #ccall bladerf_get_bandwidth , Ptr (<bladerf>) -> <bladerf_module> -> Ptr (CUInt) -> CInt
 
 #ccall bladerf_set_lpf_mode , Ptr (<bladerf>) -> <bladerf_module> -> <bladerf_lpf_mode> -> CInt
