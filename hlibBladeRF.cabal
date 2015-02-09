@@ -44,12 +44,14 @@ library
                        Bindings.LibBladeRF.Si5338
                        Bindings.LibBladeRF.Sync
                        Bindings.LibBladeRF.Lms
+                       Bindings.LibBladeRF.Gain
                        Bindings.LibBladeRF.Gpio
                        Bindings.LibBladeRF.Types
 
                        LibBladeRF.LibBladeRF
                        LibBladeRF.Sampling
                        LibBladeRF.Sync
+                       LibBladeRF.Gain
                        LibBladeRF.Gpio
                        LibBladeRF.Flash
                        LibBladeRF.Utils

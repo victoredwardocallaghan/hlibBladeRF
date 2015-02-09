@@ -16,6 +16,8 @@ module LibBladeRF.Types ( BladeRFVersion(..)
                         , BladeRFRationalRate(..)
                         , BladeRFModule(..)
                         , BladeRFFormat(..)
+                        , BladeRFLNAGain(..)
+                        , BladeRFVGAGainBounds(..)
                         ) where
 
 
@@ -137,3 +139,50 @@ instance Enum BladeRFFormat where
 formats = [ (FORMAT_SC16_Q11, c'BLADERF_FORMAT_SC16_Q11)
           , (FORMAT_SC16_Q11_META, c'BLADERF_FORMAT_SC16_Q11_META)
           ]
+
+
+-- | LNA Gain Type??
+data BladeRFLNAGain = LNA_GAIN_UNKNOWN
+                    | LNA_GAIN_BYPASS
+                    | LNA_GAIN_MID
+                    | LNA_GAIN_MAX
+                    deriving (Eq)
+
+instance Enum BladeRFLNAGain where
+  fromEnum = fromJust . flip lookup lgains
+  toEnum   = fromJust . flip lookup (map swap lgains)
+
+lgains = [ (LNA_GAIN_UNKNOWN, c'BLADERF_LNA_GAIN_UNKNOWN)
+         , (LNA_GAIN_BYPASS, c'BLADERF_LNA_GAIN_BYPASS)
+         , (LNA_GAIN_MID, c'BLADERF_LNA_GAIN_MID)
+         , (LNA_GAIN_MAX, c'BLADERF_LNA_GAIN_MAX)
+         ]
+
+--
+-- | Device control and configuration
+--
+-- This section provides functions pertaining to accessing, controlling, and
+-- configuring various device options and parameters.
+data BladeRFVGAGainBounds = RXVGA1_GAIN_MIN -- ^ Minimum RXVGA1 gain, in dB
+                          | RXVGA1_GAIN_MAX -- ^ Maximum RXVGA1 gain, in dB
+                          | RXVGA2_GAIN_MIN -- ^ Minimum RXVGA2 gain, in dB
+                          | RXVGA2_GAIN_MAX -- ^ Maximum RXVGA2 gain, in dB
+                          | TXVGA1_GAIN_MIN -- ^ Minimum TXVGA1 gain, in dB
+                          | TXVGA1_GAIN_MAX -- ^ Maximum TXVGA1 gain, in dB
+                          | TXVGA2_GAIN_MIN -- ^ Minimum TXVGA2 gain, in dB
+                          | TXVGA2_GAIN_MAX -- ^ Maximum TXVGA2 gain, in dB
+                          deriving (Eq)
+
+instance Enum BladeRFVGAGainBounds where
+  fromEnum = fromJust . flip lookup vgains
+  toEnum   = fromJust . flip lookup (map swap vgains)
+
+vgains = [ (RXVGA1_GAIN_MIN, c'BLADERF_RXVGA1_GAIN_MIN)
+         , (RXVGA1_GAIN_MAX, c'BLADERF_RXVGA1_GAIN_MAX)
+         , (RXVGA2_GAIN_MIN, c'BLADERF_RXVGA2_GAIN_MIN)
+         , (RXVGA2_GAIN_MAX, c'BLADERF_RXVGA2_GAIN_MAX)
+         , (TXVGA1_GAIN_MIN, c'BLADERF_TXVGA1_GAIN_MIN)
+         , (TXVGA1_GAIN_MAX, c'BLADERF_TXVGA1_GAIN_MAX)
+         , (TXVGA2_GAIN_MIN, c'BLADERF_TXVGA2_GAIN_MIN)
+         , (TXVGA2_GAIN_MAX, c'BLADERF_TXVGA2_GAIN_MAX)
+         ]

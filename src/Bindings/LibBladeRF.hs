@@ -19,4 +19,5 @@ import Bindings.LibBladeRF.Si5338 as X
 import Bindings.LibBladeRF.Sync as X
 import Bindings.LibBladeRF.Lms as X
 import Bindings.LibBladeRF.Gpio as X
+import Bindings.LibBladeRF.Gain as X
 import Bindings.LibBladeRF.Types as X

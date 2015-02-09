@@ -57,25 +57,6 @@ import Bindings.LibBladeRF.Types
 #ccall bladerf_get_correction , Ptr (<bladerf>) -><bladerf_module> -> <bladerf_correction> -> Ptr (Word16) -> CInt
 
 
-#ccall bladerf_set_txvga2 , Ptr (<bladerf>) -> CInt -> CInt
-#ccall bladerf_get_txvga2 , Ptr (<bladerf>) -> Ptr (CInt) -> CInt
-
-#ccall bladerf_set_txvga1 , Ptr (<bladerf>) -> CInt -> CInt
-#ccall bladerf_get_txvga1 , Ptr (<bladerf>) -> Ptr (CInt) -> CInt
-
--- #ccall bladerf_set_tx_gain , Ptr (<bladerf>) -> CInt -> CInt
-
-#ccall bladerf_set_lna_gain , Ptr (<bladerf>) -> <bladerf_lna_gain> -> CInt
-#ccall bladerf_get_lna_gain , Ptr (<bladerf>) -> Ptr (<bladerf_lna_gain>) -> CInt
-
-#ccall bladerf_set_rxvga1 , Ptr (<bladerf>) -> CInt -> CInt
-#ccall bladerf_get_rxvga1 , Ptr (<bladerf>) -> Ptr (CInt) -> CInt
-
-#ccall bladerf_set_rxvga2 , Ptr (<bladerf>) -> CInt -> CInt
-#ccall bladerf_get_rxvga2 , Ptr (<bladerf>) -> Ptr (CInt) -> CInt
-
-#ccall bladerf_set_gain , Ptr (<bladerf>) -> <bladerf_module> -> CInt -> CInt
-
 #ccall bladerf_set_bandwidth , Ptr (<bladerf>) -> <bladerf_module> -> CUInt -> Ptr (CUInt) -> IO (CInt)
 #ccall bladerf_get_bandwidth , Ptr (<bladerf>) -> <bladerf_module> -> Ptr (CUInt) -> CInt
 
