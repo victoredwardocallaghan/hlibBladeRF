@@ -28,21 +28,19 @@ import LibBladeRF.Types
 
 --
 -- | Read a configuration GPIO register
-bladeRFConfigGPIORead :: BladeRF Word32
-bladeRFConfigGPIORead  = do
-  dev <- BladeRF $ lift get
-  pv <- liftIO (malloc :: IO (Ptr Word32))
-  liftIO $ c'bladerf_config_gpio_read dev pv
-  v <- liftIO $ peek pv
-  liftIO $ free pv
+bladeRFConfigGPIORead :: DeviceHandle -> IO Word32
+bladeRFConfigGPIORead dev = do
+  pv <- malloc :: IO (Ptr Word32)
+  c'bladerf_config_gpio_read (unDeviceHandle dev) pv
+  v <- peek pv
+  free pv
   return v
 
 --
 -- | Write a configuration GPIO register. Callers should be sure to perform a
 --   read-modify-write sequence to avoid accidentally clearing other
 --   GPIO bits that may be set by the library internally.
-bladeRFConfigGPIOWrite :: Word32 -> BladeRF ()
-bladeRFConfigGPIOWrite v = do
-  dev <- BladeRF $ lift get
-  liftIO $ c'bladerf_config_gpio_write dev v
+bladeRFConfigGPIOWrite :: DeviceHandle -> Word32 -> IO ()
+bladeRFConfigGPIOWrite dev v = do
+  c'bladerf_config_gpio_write (unDeviceHandle dev) v
   return () -- ignores ret

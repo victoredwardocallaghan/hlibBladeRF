@@ -32,9 +32,10 @@ import Bindings.LibBladeRF
 import LibBladeRF.LibBladeRF
 import LibBladeRF.Types
 
+
 --
 -- | Get libbladeRF version information
-bladeRFLibVersion :: IO BladeRFVersion
+-- bladeRFLibVersion :: IO BladeRFVersion
 bladeRFLibVersion = do
   p <- malloc :: IO (Ptr C'bladerf_version)
   c'bladerf_version p
@@ -50,38 +51,36 @@ bladeRFLibVersion = do
 
 --
 -- | Query firmware version
-bladeRFFwVersion :: BladeRF BladeRFVersion
-bladeRFFwVersion = do
-  p <- liftIO (malloc :: IO (Ptr C'bladerf_version))
-  dev <- BladeRF $ lift get
-  liftIO $ c'bladerf_fw_version dev p
-  brfv <- liftIO $ peek p
-  desc <- liftIO $ peekCString $ c'bladerf_version'describe brfv
+bladeRFFwVersion :: DeviceHandle -> IO BladeRFVersion
+bladeRFFwVersion dev = do
+  p <- malloc :: IO (Ptr C'bladerf_version)
+  c'bladerf_fw_version (unDeviceHandle dev) p
+  brfv <- peek p
+  desc <- peekCString $ c'bladerf_version'describe brfv
   let ver = BladeRFVersion { major = c'bladerf_version'major brfv
                            , minor = c'bladerf_version'minor brfv
                            , patch = c'bladerf_version'patch brfv
                            , descr = desc
                            }
-  liftIO $ free p
+  free p
   return ver
 
 --
 -- | Query FPGA version
-bladeRFFPGAVersion :: BladeRF BladeRFVersion
-bladeRFFPGAVersion  = do
-  dev <- BladeRF $ lift get
-  status <- liftIO $ c'bladerf_is_fpga_configured dev
+bladeRFFPGAVersion :: DeviceHandle -> IO BladeRFVersion
+bladeRFFPGAVersion dev = do
+  status <- liftIO $ c'bladerf_is_fpga_configured (unDeviceHandle dev)
   if status > 0 then do
-    p <- liftIO (malloc :: IO (Ptr C'bladerf_version))
-    liftIO $ c'bladerf_fpga_version dev p
-    brfv <- liftIO $ peek p
-    desc <- liftIO $ peekCString $ c'bladerf_version'describe brfv
+    p <- malloc :: IO (Ptr C'bladerf_version)
+    c'bladerf_fpga_version (unDeviceHandle dev) p
+    brfv <- peek p
+    desc <- peekCString $ c'bladerf_version'describe brfv
     let ver = BladeRFVersion { major = c'bladerf_version'major brfv
                              , minor = c'bladerf_version'minor brfv
                              , patch = c'bladerf_version'patch brfv
                              , descr = desc
                              }
-    liftIO $ free p
+    free p
     return ver
   else
     return    BladeRFVersion { major = 0
@@ -95,68 +94,62 @@ bladeRFFPGAVersion  = do
 -- | Load device's FPGA. Note that this FPGA configuration will be reset
 --   at the next power cycle.
 -- pass Full path to FPGA bitstream
-bladeRFLoadFPGA :: String -> BladeRF ()
-bladeRFLoadFPGA s = do
-  p <- liftIO $ newCString s
-  dev <- BladeRF $ lift get
-  _ <- liftIO $ c'bladerf_load_fpga dev p
+bladeRFLoadFPGA :: DeviceHandle -> String -> IO ()
+bladeRFLoadFPGA dev s = do
+  p <- newCString s
+  _ <- c'bladerf_load_fpga (unDeviceHandle dev) p
   return ()
 
 --
 -- | Obtain the bus speed at which the device is operating
-bladeRFDeviceSpeed :: BladeRF Word32
-bladeRFDeviceSpeed  = do
-  dev <- BladeRF $ lift get
-  speed <- liftIO $ c'bladerf_device_speed dev
+bladeRFDeviceSpeed :: DeviceHandle -> IO Word32
+bladeRFDeviceSpeed dev = do
+  speed <- c'bladerf_device_speed (unDeviceHandle dev)
   return $ fromIntegral speed
 
 --
 -- | Fill out a provided bladerf_devinfo structure, given an open device handle.
-bladeRFGetDevInfo :: BladeRF BladeRFDeviceInfo
-bladeRFGetDevInfo = do
-  p <- liftIO (malloc :: IO (Ptr C'bladerf_devinfo))
-  dev <- BladeRF $ lift get
-  liftIO $ c'bladerf_get_devinfo dev p
+bladeRFGetDevInfo :: DeviceHandle -> IO BladeRFDeviceInfo
+bladeRFGetDevInfo dev = do
+  p <- malloc :: IO (Ptr C'bladerf_devinfo)
+  c'bladerf_get_devinfo (unDeviceHandle dev) p
 -- XXX ^ handle status return error with Maybe monad???
-  brfv <- liftIO $ peek p
+  brfv <- peek p
   let info = BladeRFDeviceInfo { backend = toEnum . fromEnum . c'bladerf_devinfo'backend $ brfv
                                , serial  = map castCCharToChar . c'bladerf_devinfo'serial $ brfv
                                , usbBus  = c'bladerf_devinfo'usb_bus brfv
                                , usbAddr = c'bladerf_devinfo'usb_addr brfv
                                , inst    = c'bladerf_devinfo'instance brfv
                                }
-  liftIO $ free p
+  free p
   return info
 
 --
 -- | Query a device's serial number
-bladeRFGetSerial :: BladeRF String
-bladeRFGetSerial  = do
-  cstring <- liftIO (mallocBytes 34) -- device serial is 33 bytes long + null terminating byte.
-  dev <- BladeRF $ lift get
+bladeRFGetSerial :: DeviceHandle -> IO String
+bladeRFGetSerial dev = do
+  cstring <- mallocBytes 34 -- device serial is 33 bytes long + null terminating byte.
   -- API bug bladerf_get_serial() should be allocating the buffer itself, not the call site!
-  liftIO $ c'bladerf_get_serial dev cstring
-  serial <- liftIO $ peekCString cstring
-  liftIO $ free cstring
+  c'bladerf_get_serial (unDeviceHandle dev) cstring
+  serial <- peekCString cstring
+  free cstring
   return serial
 
 --
 -- | Query a device's FPGA size
-bladeRFGetFPGASize :: BladeRF BladeRFFPGASize
-bladeRFGetFPGASize  = do
-  dev <- BladeRF $ lift get
-  p <- liftIO (malloc :: IO (Ptr C'bladerf_fpga_size))
-  liftIO $ c'bladerf_get_fpga_size dev p
-  sz <- liftIO $ peek p
-  liftIO $ free p
+bladeRFGetFPGASize :: DeviceHandle -> IO BladeRFFPGASize
+bladeRFGetFPGASize dev = do
+  p <- malloc :: IO (Ptr C'bladerf_fpga_size)
+  c'bladerf_get_fpga_size (unDeviceHandle dev) p
+  sz <- peek p
+  free p
   return $ (toEnum . fromEnum) sz
 
 
 -- | Enable or disable the specified RX/TX module.
 --   When a synchronous stream is associated with the specified module, this
 --   will shut down the underlying asynchronous stream when `enable` = false.
-bladeRFEnableModule :: BladeRFModule -> Bool -> BladeRF ()
-bladeRFEnableModule m t = do
-  dev <- BladeRF $ lift get
-  liftIO $ c'bladerf_enable_module dev ((fromIntegral . fromEnum) m) t
+bladeRFEnableModule :: DeviceHandle -> BladeRFModule -> Bool -> IO ()
+bladeRFEnableModule dev m t = do
+  c'bladerf_enable_module (unDeviceHandle dev) ((fromIntegral . fromEnum) m) t
   return () -- XXX ignore ret

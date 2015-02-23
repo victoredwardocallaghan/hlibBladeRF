@@ -29,30 +29,26 @@ import LibBladeRF.LibBladeRF
 
 --
 -- | Erase regions of the bladeRF's SPI flash
-bladeRFEraseFlash :: Word32 -> Word32 -> BladeRF CInt
-bladeRFEraseFlash b c = do
-  dev <- BladeRF $ lift get
-  liftIO $ c'bladerf_erase_flash dev b c
+bladeRFEraseFlash :: DeviceHandle -> Word32 -> Word32 -> IO CInt
+bladeRFEraseFlash dev b c = c'bladerf_erase_flash (unDeviceHandle dev) b c
 
 --
 -- | Read data from the bladeRF's SPI flash
-bladeRFReadFlash :: Word32 -> Word32 -> BladeRF (CInt, Word8)
-bladeRFReadFlash p c = do
-  dev <- BladeRF $ lift get
-  bptr <- liftIO (malloc :: IO (Ptr Word8))
-  ret <- liftIO $ c'bladerf_read_flash dev bptr p c
-  buffer <- liftIO $ peek bptr
-  liftIO $ free bptr
+bladeRFReadFlash :: DeviceHandle -> Word32 -> Word32 -> IO (CInt, Word8)
+bladeRFReadFlash dev p c = do
+  bptr <- malloc :: IO (Ptr Word8)
+  ret <- c'bladerf_read_flash (unDeviceHandle dev) bptr p c
+  buffer <- peek bptr
+  free bptr
   return (ret, buffer)
 
 --
 -- | Write data from the bladeRF's SPI flash
 -- FIXME - how to pass in a buffer of data???
---bladeRFWriteFlash :: Word32 -> Word32 -> BladeRF (CInt, Word8)
---bladeRFWriteFlash p c = do
---  dev <- BladeRF $ lift get
---  bptr <- liftIO (malloc :: IO (Ptr Word8))
---  ret <- liftIO $ c'bladerf_read_flash dev bptr p c
---  buffer <- liftIO $ peek bptr
---  liftIO $ free bptr
+--bladeRFWriteFlash :: DeviceHandle -> Word32 -> Word32 -> IO (CInt, Word8)
+--bladeRFWriteFlash dev p c = do
+--  bptr <- malloc :: IO (Ptr Word8)
+--  ret <- c'bladerf_read_flash (unDeviceHandle dev) bptr p c
+--  buffer <- peek bptr
+--  free bptr
 --  return (ret, buffer)

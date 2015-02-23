@@ -31,47 +31,43 @@ import LibBladeRF.Types
 
 --
 -- | Write value to VCTCXO DAC
-bladeRFDACWrite :: Word16 -- ^ Data to write to DAC register
-                -> BladeRF ()
-bladeRFDACWrite v = do
-  dev <- BladeRF $ lift get
-  liftIO $ c'bladerf_dac_write dev v
+bladeRFDACWrite :: DeviceHandle
+                -> Word16 -- ^ Data to write to DAC register
+                -> IO ()
+bladeRFDACWrite dev v = do
+  c'bladerf_dac_write (unDeviceHandle dev) v
   return () -- ignores ret
 
 --
 -- | ..
-bladeRFGetFrequency :: BladeRFModule -> BladeRF Int
-bladeRFGetFrequency m = do
-  dev <- BladeRF $ lift get
-  pf <- liftIO (malloc :: IO (Ptr CUInt))
-  liftIO $ c'bladerf_get_frequency dev ((fromIntegral . fromEnum) m) pf
-  f <- liftIO $ peek pf
-  liftIO $ free pf
+bladeRFGetFrequency :: DeviceHandle -> BladeRFModule -> IO Int
+bladeRFGetFrequency dev m = do
+  pf <- malloc :: IO (Ptr CUInt)
+  c'bladerf_get_frequency (unDeviceHandle dev) ((fromIntegral . fromEnum) m) pf
+  f <- peek pf
+  free pf
   return $ fromIntegral f
 
 --
 -- | ..
-bladeRFSetFrequency :: BladeRFModule -> Int -> BladeRF ()
-bladeRFSetFrequency m f = do
-  dev <- BladeRF $ lift get
-  liftIO $ c'bladerf_set_frequency dev ((fromIntegral . fromEnum) m) (fromIntegral f)
+bladeRFSetFrequency :: DeviceHandle -> BladeRFModule -> Int -> IO ()
+bladeRFSetFrequency dev m f = do
+  c'bladerf_set_frequency (unDeviceHandle dev) ((fromIntegral . fromEnum) m) (fromIntegral f)
   return () -- ignores ret
 
 --
 -- | ..
-bladeRFGetCorrection :: BladeRFModule -> BladeRFCorrection -> BladeRF Word16
-bladeRFGetCorrection m c = do
-  dev <- BladeRF $ lift get
-  pc <- liftIO (malloc :: IO (Ptr Word16))
-  liftIO $ c'bladerf_get_correction dev ((fromIntegral . fromEnum) m) ((fromIntegral . fromEnum) c) pc
-  c <- liftIO $ peek pc
-  liftIO $ free pc
+bladeRFGetCorrection :: DeviceHandle -> BladeRFModule -> BladeRFCorrection -> IO Word16
+bladeRFGetCorrection dev m c = do
+  pc <- malloc :: IO (Ptr Word16)
+  c'bladerf_get_correction (unDeviceHandle dev) ((fromIntegral . fromEnum) m) ((fromIntegral . fromEnum) c) pc
+  c <- peek pc
+  free pc
   return c
 
 --
 -- | ..
-bladeRFSetCorrection :: BladeRFModule -> BladeRFCorrection -> Word16 -> BladeRF ()
-bladeRFSetCorrection m c v = do
-  dev <- BladeRF $ lift get
-  liftIO $ c'bladerf_set_correction dev ((fromIntegral . fromEnum) m) ((fromIntegral . fromEnum) c) v
+bladeRFSetCorrection :: DeviceHandle -> BladeRFModule -> BladeRFCorrection -> Word16 -> IO ()
+bladeRFSetCorrection dev m c v = do
+  c'bladerf_set_correction (unDeviceHandle dev) ((fromIntegral . fromEnum) m) ((fromIntegral . fromEnum) c) v
   return () -- ignores ret

@@ -45,97 +45,87 @@ import LibBladeRF.Types
 
 --
 -- | Set the PA gain in dB
-bladeRFSetTXVGA2 :: Int -> BladeRF ()
-bladeRFSetTXVGA2 g = do
-  dev <- BladeRF $ lift get
-  liftIO $ c'bladerf_set_txvga2 dev (fromIntegral g)
+bladeRFSetTXVGA2 :: DeviceHandle -> Int -> IO ()
+bladeRFSetTXVGA2 dev g = do
+  c'bladerf_set_txvga2 (unDeviceHandle dev) (fromIntegral g)
   return () -- ignores ret
 
 --
 -- | Get the PA gain in dB
-bladeRFGetTXVGA2 :: BladeRF Int
-bladeRFGetTXVGA2  = do
-  dev <- BladeRF $ lift get
-  p <- liftIO (malloc :: IO (Ptr CInt))
-  liftIO $ c'bladerf_get_txvga2 dev p
-  g <- liftIO $ peek p
-  liftIO $ free p
+bladeRFGetTXVGA2 :: DeviceHandle -> IO Int
+bladeRFGetTXVGA2 dev = do
+  p <- malloc :: IO (Ptr CInt)
+  c'bladerf_get_txvga2 (unDeviceHandle dev) p
+  g <-  peek p
+  free p
   return $ fromIntegral g
 
 --
 -- | Set the post-LPF gain in dB
-bladeRFSetTXVGA1 :: Int -> BladeRF ()
-bladeRFSetTXVGA1 g = do
-  dev <- BladeRF $ lift get
-  liftIO $ c'bladerf_set_txvga1 dev (fromIntegral g)
+bladeRFSetTXVGA1 :: DeviceHandle -> Int -> IO ()
+bladeRFSetTXVGA1 dev g = do
+  c'bladerf_set_txvga1 (unDeviceHandle dev) (fromIntegral g)
   return () -- ignores ret
 
 --
 -- | Get the post-LPF gain in dB
-bladeRFGetTXVGA1 :: BladeRF Int
-bladeRFGetTXVGA1  = do
-  dev <- BladeRF $ lift get
-  p <- liftIO (malloc :: IO (Ptr CInt))
-  liftIO $ c'bladerf_get_txvga1 dev p
-  g <- liftIO $ peek p
-  liftIO $ free p
+bladeRFGetTXVGA1 :: DeviceHandle -> IO Int
+bladeRFGetTXVGA1 dev = do
+  p <- malloc :: IO (Ptr CInt)
+  c'bladerf_get_txvga1 (unDeviceHandle dev) p
+  g <-  peek p
+  free p
   return $ fromIntegral g
 
 --
 -- | Set the post-LPF VGA gain
-bladeRFSetRXVGA2 :: Int -> BladeRF ()
-bladeRFSetRXVGA2 g = do
-  dev <- BladeRF $ lift get
-  liftIO $ c'bladerf_set_rxvga2 dev (fromIntegral g)
+bladeRFSetRXVGA2 :: DeviceHandle -> Int -> IO ()
+bladeRFSetRXVGA2 dev g = do
+  c'bladerf_set_rxvga2 (unDeviceHandle dev) (fromIntegral g)
   return () -- ignores ret
 
 --
 -- | Get the post-LPF VGA gain
-bladeRFGetRXVGA2 :: BladeRF Int
-bladeRFGetRXVGA2  = do
-  dev <- BladeRF $ lift get
+bladeRFGetRXVGA2 :: DeviceHandle -> IO Int
+bladeRFGetRXVGA2 dev = do
   p <- liftIO (malloc :: IO (Ptr CInt))
-  liftIO $ c'bladerf_get_rxvga2 dev p
-  g <- liftIO $ peek p
-  liftIO $ free p
+  c'bladerf_get_rxvga2 (unDeviceHandle dev) p
+  g <-  peek p
+  free p
   return $ fromIntegral g
 
 --
 -- | Set the pre-LPF VGA gain
-bladeRFSetRXVGA1 :: Int -> BladeRF ()
-bladeRFSetRXVGA1 g = do
-  dev <- BladeRF $ lift get
-  liftIO $ c'bladerf_set_rxvga1 dev (fromIntegral g)
+bladeRFSetRXVGA1 :: DeviceHandle -> Int -> IO ()
+bladeRFSetRXVGA1 dev g = do
+  c'bladerf_set_rxvga1 (unDeviceHandle dev) (fromIntegral g)
   return () -- ignores ret
 
 --
 -- | Get the pre-LPF VGA gain
-bladeRFGetRXVGA1 :: BladeRF Int
-bladeRFGetRXVGA1  = do
-  dev <- BladeRF $ lift get
-  p <- liftIO (malloc :: IO (Ptr CInt))
-  liftIO $ c'bladerf_get_rxvga1 dev p
-  g <- liftIO $ peek p
-  liftIO $ free p
+bladeRFGetRXVGA1 :: DeviceHandle -> IO Int
+bladeRFGetRXVGA1 dev = do
+  p <- malloc :: IO (Ptr CInt)
+  c'bladerf_get_rxvga1 (unDeviceHandle dev) p
+  g <-  peek p
+  free p
   return $ fromIntegral g
 
 --
 -- | Set LNA Gain
-bladeRFSetLNAGain :: BladeRFLNAGain -> BladeRF ()
-bladeRFSetLNAGain g = do
-  dev <- BladeRF $ lift get
-  liftIO $ c'bladerf_set_lna_gain dev ((fromIntegral . fromEnum) g)
+bladeRFSetLNAGain :: DeviceHandle -> BladeRFLNAGain -> IO ()
+bladeRFSetLNAGain dev g = do
+  c'bladerf_set_lna_gain (unDeviceHandle dev) ((fromIntegral . fromEnum) g)
   return () -- ignores ret
 
 --
 -- | Get LNA Gain
-bladeRFGetLNAGain :: BladeRF BladeRFLNAGain
-bladeRFGetLNAGain  = do
-  dev <- BladeRF $ lift get
-  p <- liftIO (malloc :: IO (Ptr C'bladerf_lna_gain))
-  liftIO $ c'bladerf_get_lna_gain dev p
-  g <- liftIO $ peek p
-  liftIO $ free p
+bladeRFGetLNAGain :: DeviceHandle -> IO BladeRFLNAGain
+bladeRFGetLNAGain dev = do
+  p <- malloc :: IO (Ptr C'bladerf_lna_gain)
+  c'bladerf_get_lna_gain (unDeviceHandle dev) p
+  g <-  peek p
+  free p
   return $ (toEnum . fromIntegral) g
 
 --
@@ -143,18 +133,16 @@ bladeRFGetLNAGain  = do
 --   This function computes the optimal TXVGA1 and TXVGA2 gains for a requested
 --   amount of gain
 -- XXX symb not found!!!
---bladeRFSetTXGain :: Int -> BladeRF ()
---bladeRFSetTXGain g = do
---  dev <- BladeRF $ lift get
---  liftIO $ c'bladerf_set_tx_gain dev (fromIntegral g)
+--bladeRFSetTXGain :: DeviceHandle -> Int -> IO ()
+--bladeRFSetTXGain dev g = do
+--  c'bladerf_set_tx_gain (unDeviceHandle dev) (fromIntegral g)
 --  return () -- ignores ret
 
 -- | Set a combined pre and post LPF RX gain
 --   This function computes the optimal LNA, RXVGA1, and RVGA2 gains for a
 --   requested amount of RX gain, and computes the optimal TXVGA1 and TXVGA2 gains
 --   for a requested amount of TX gain
-bladeRFSetGain :: BladeRFModule -> Int -> BladeRF ()
-bladeRFSetGain m g = do
-  dev <- BladeRF $ lift get
-  liftIO $ c'bladerf_set_gain dev ((fromIntegral . fromEnum) m) (fromIntegral g)
+bladeRFSetGain :: DeviceHandle -> BladeRFModule -> Int -> IO ()
+bladeRFSetGain dev m g = do
+  c'bladerf_set_gain (unDeviceHandle dev) ((fromIntegral . fromEnum) m) (fromIntegral g)
   return () -- ignores ret

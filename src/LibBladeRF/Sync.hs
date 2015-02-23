@@ -38,17 +38,17 @@ import LibBladeRF.Types
 
 --
 -- | (Re)Configure a device for synchronous transmission or reception
-bladeRFSyncConfig :: BladeRFModule -- ^ Module to use with synchronous interface
+bladeRFSyncConfig :: DeviceHandle
+                  -> BladeRFModule -- ^ Module to use with synchronous interface
                   -> BladeRFFormat -- ^ Format to use in synchronous data transfers
                   -> Int           -- ^ The number of buffers to use in the underlying data stream.
                   -> Int           -- ^ The size of the underlying stream buffers, in samples. This value must be a multiple of 1024.
                   -> Int           -- ^ The number of active USB transfers that may be in-flight at any given time.
                   -> Int           -- ^ Timeout (milliseconds) for transfers in the underlying data stream.
-                  -> BladeRF ()
+                  -> IO ()
 
-bladeRFSyncConfig m f nb sz tr to = do
-  dev <- BladeRF $ lift get
-  liftIO $ c'bladerf_sync_config dev ((fromIntegral . fromEnum) m) ((fromIntegral . fromEnum) f) (fromIntegral nb) (fromIntegral sz) (fromIntegral tr) (fromIntegral to)
+bladeRFSyncConfig dev m f nb sz tr to = do
+  c'bladerf_sync_config (unDeviceHandle dev) ((fromIntegral . fromEnum) m) ((fromIntegral . fromEnum) f) (fromIntegral nb) (fromIntegral sz) (fromIntegral tr) (fromIntegral to)
   return () -- ignores ret
 
 

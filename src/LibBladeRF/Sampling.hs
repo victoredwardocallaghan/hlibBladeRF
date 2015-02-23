@@ -31,45 +31,42 @@ import LibBladeRF.Types
 -- | Configure the device's sample rate, in Hz.  Note this requires the sample
 --   rate is an integer value of Hz.  Use bladeRFSetRationalSampleRate
 --   for more arbitrary values.
-bladeRFSetSampleRate :: BladeRFModule -> Int -> BladeRF Int
-bladeRFSetSampleRate m r = do
-  dev <- BladeRF $ lift get
-  par <- liftIO (malloc :: IO (Ptr CUInt))
-  liftIO $ c'bladerf_set_sample_rate dev ((fromIntegral . fromEnum) m) (fromIntegral r) par
-  actual <- liftIO $ peek par
-  liftIO $ free par
+bladeRFSetSampleRate :: DeviceHandle -> BladeRFModule -> Int -> IO Int
+bladeRFSetSampleRate dev m r = do
+  par <- malloc :: IO (Ptr CUInt)
+  c'bladerf_set_sample_rate (unDeviceHandle dev) ((fromIntegral . fromEnum) m) (fromIntegral r) par
+  actual <- peek par
+  free par
   return $ fromIntegral actual
 
 --
 -- | Configure the device's sample rate as a rational fraction of Hz.
 --   Sample rates are in the form of integer + num/denom.
-bladeRFSetRationalSampleRate :: BladeRFModule -> BladeRFRationalRate -> BladeRF BladeRFRationalRate
-bladeRFSetRationalSampleRate m r = do
-  dev <- BladeRF $ lift get
-  pr <- liftIO (malloc :: IO (Ptr C'bladerf_rational_rate))
-  par <- liftIO (malloc :: IO (Ptr C'bladerf_rational_rate))
+bladeRFSetRationalSampleRate :: DeviceHandle -> BladeRFModule -> BladeRFRationalRate -> IO BladeRFRationalRate
+bladeRFSetRationalSampleRate dev m r = do
+  pr <- malloc :: IO (Ptr C'bladerf_rational_rate)
+  par <- malloc :: IO (Ptr C'bladerf_rational_rate)
   let rate = C'bladerf_rational_rate { c'bladerf_rational_rate'integer = integer r
                                      , c'bladerf_rational_rate'num     = num r
                                      , c'bladerf_rational_rate'den     = den r
                                      }
-  liftIO $ poke pr rate
-  liftIO $ c'bladerf_set_rational_sample_rate dev ((fromIntegral . fromEnum) m) pr par
-  ar <- liftIO $ peek par
+  poke pr rate
+  c'bladerf_set_rational_sample_rate (unDeviceHandle dev) ((fromIntegral . fromEnum) m) pr par
+  ar <- peek par
   let actual = BladeRFRationalRate { integer = c'bladerf_rational_rate'integer ar
                                    , num     = c'bladerf_rational_rate'num ar
                                    , den     = c'bladerf_rational_rate'den ar
                                    }
-  liftIO $ free pr
-  liftIO $ free par
+  free pr
+  free par
   return actual
 
 --
 -- | Set the bandwidth of the LMS LPF to specified value in Hz
-bladeRFSetBandwidth :: BladeRFModule -> Int -> BladeRF Int
-bladeRFSetBandwidth m b = do
-  dev <- BladeRF $ lift get
-  ab <- liftIO (malloc :: IO (Ptr CUInt))
-  liftIO $ c'bladerf_set_bandwidth dev ((fromIntegral . fromEnum) m) (fromIntegral b) ab
-  actual <- liftIO $ peek ab
-  liftIO $ free ab
+bladeRFSetBandwidth :: DeviceHandle -> BladeRFModule -> Int -> IO Int
+bladeRFSetBandwidth dev m b = do
+  ab <- malloc :: IO (Ptr CUInt)
+  c'bladerf_set_bandwidth (unDeviceHandle dev) ((fromIntegral . fromEnum) m) (fromIntegral b) ab
+  actual <- peek ab
+  free ab
   return $ fromIntegral actual

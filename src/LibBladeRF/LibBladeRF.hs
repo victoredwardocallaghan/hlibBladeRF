@@ -12,10 +12,10 @@
   so on.
 -}
 
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE DeriveDataTypeable #-}
 
 module LibBladeRF.LibBladeRF ( withBladeRF
-                             , BladeRF(..)
+                             , DeviceHandle(..)
                              ) where
 
 import Foreign
@@ -23,13 +23,8 @@ import Foreign.C.Types
 import Foreign.C.String
 import Foreign.Ptr
 
-import Control.Applicative (Applicative(..), (<$>))
-import Control.Monad (ap)
-import Control.Monad.Trans
--- import Control.Monad.Trans.Reader
-import Control.Monad.Trans.State
-import Control.Monad.Trans.Except
-import Control.Monad.IO.Class
+import Control.Exception
+import Data.Typeable (Typeable, cast)
 
 import Bindings.LibBladeRF
 
@@ -50,6 +45,7 @@ data BladeRFError = BLADERF_ERR_UNEXPECTED
                   | BLADERF_ERR_UPDATE_FPGA
                   | BLADERF_ERR_UPDATE_FW
                   | BLADERF_ERR_TIME_PAST
+                   deriving (Typeable)
 
 instance Show BladeRFError where
   show BLADERF_ERR_UNEXPECTED  = "An unexpected failure occurred"
@@ -67,54 +63,38 @@ instance Show BladeRFError where
   show BLADERF_ERR_UPDATE_FW   = "A firmware update is requied"
   show BLADERF_ERR_TIME_PAST   = "Requested timestamp is in the past"
 
+instance Exception BladeRFError
 
-newtype BladeRF a = BladeRF { unBladeRF :: ExceptT BladeRFError (StateT (Ptr C'bladerf) IO) a }
--- newtype BladeRF a = BladeRF { unBladeRF :: ExceptT BladeRFError IO a }
-  deriving (Monad, MonadIO)
+newtype DeviceHandle = DeviceHandle { unDeviceHandle :: Ptr C'bladerf }
 
-instance Functor BladeRF where
-  {-# INLINE fmap #-}
-  fmap f m = BladeRF (f <$> unBladeRF m)
+-- | essential wrapper
+withBladeRF :: (DeviceHandle -> IO a) -> IO ()
+withBladeRF body = do
+  dev <- openBladeRF
+  body dev
+  closeBladeRF dev
 
-instance Applicative BladeRF where
-  {-# INLINE pure #-}
-  pure  = return
-  {-# INLINE (<*>) #-}
-  (<*>) = ap
-
-runBladeRF m = evalStateT (runExceptT . unBladeRF $ m) nullPtr
--- XXX change nullPtr to invocate openBladeRF and move over to ReaderT instead of StateT
-
--- XXX dont rethrow but show the error message with a instance of strings..
-bracket open close body = do
-    BladeRF $ catchE (unBladeRF open)
-     throwE
-    BladeRF $ catchE (unBladeRF body)
-     (\e -> do unBladeRF close ; throwE e)
-    close
+-- | Handy helper to wrap around Either results
+openBladeRF :: IO DeviceHandle
+openBladeRF = do
+  r <- openBladeRF'
+  case r of
+    Left e -> throwIO e
+    Right dev -> return dev
 
 --
 -- Open specified device using a device identifier string.
 -- See bladerf_open_with_devinfo() if a device identifier string
 -- is not readily available.
-openBladeRF p = do
-  dev <- liftIO (malloc :: IO (Ptr (Ptr C'bladerf)))
-  ret <- liftIO $ c'bladerf_open dev p
-  -- make into switch or something better?? for more detailed error report
-  if ret /= 0 then do
-    liftIO $ free dev
-    BladeRF $ throwE BLADERF_ERR_NODEV
+openBladeRF' :: IO (Either BladeRFError DeviceHandle)
+openBladeRF'  = alloca $ \ptr -> do
+  ret <- c'bladerf_open ptr nullPtr
+  if ret /= 0 then
+    return (Left BLADERF_ERR_NODEV) -- is this the right error in every case?
   else do
-    pdev <- liftIO $ peek dev
-    BladeRF $ lift (put pdev)
+    pdev <- peek ptr
+    return (Right (DeviceHandle pdev))
 
---
 -- | Close device. Deallocates the memory allocated by openBladeRF when called.
-closeBladeRF = (BladeRF $ lift get) >>= liftIO . c'bladerf_close
--- closeBladeRF = do dev <- BladeRF $ lift get ; liftIO $ c'bladerf_close dev
-
-
--- nullPtr is passed to openBladeRF as the "device string" whatever that is??
--- passing nullPtr appears to make a probe occur so just use that.
--- withBladeRF :: IO a -> BladeRF ()
-withBladeRF stuff = runBladeRF $ bracket (openBladeRF nullPtr) closeBladeRF stuff
+closeBladeRF :: DeviceHandle -> IO ()
+closeBladeRF d = c'bladerf_close $ unDeviceHandle d
