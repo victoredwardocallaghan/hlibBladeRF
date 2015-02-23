@@ -4,13 +4,12 @@ import Control.Monad.IO.Class
 
 import LibBladeRF.LibBladeRF
 import LibBladeRF.Utils
-import LibBladeRF.Misc
 import LibBladeRF.Types
 
-main  = withBladeRF $ do
-  libVersion <- liftIO $ bladeRFLibVersion
-  fwVersion <- bladeRFFwVersion
-  fpgaVersion <- bladeRFFPGAVersion
-  printBladeRF $ " libbladeRF version: " ++ (show libVersion)
-  printBladeRF $ " Firmware version: " ++ (show fwVersion)
-  printBladeRF $ " FPGA version: " ++ (show fpgaVersion)
+main  = withBladeRF $ \dev -> do
+  libVersion <- bladeRFLibVersion
+  fwVersion <- bladeRFFwVersion dev
+  fpgaVersion <- bladeRFFPGAVersion dev
+  putStrLn $ " libbladeRF version: " ++ (show libVersion)
+  putStrLn $ " Firmware version: " ++ (show fwVersion)
+  putStrLn $ " FPGA version: " ++ (show fpgaVersion)
