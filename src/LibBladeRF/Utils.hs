@@ -17,6 +17,7 @@ module LibBladeRF.Utils ( bladeRFLibVersion
                         , bladeRFGetDevInfo
                         , bladeRFGetSerial
                         , bladeRFGetFPGASize
+                        , bladeRFEnableModule
                         ) where
 
 import Foreign
@@ -93,7 +94,7 @@ bladeRFFPGAVersion  = do
 --
 -- | Load device's FPGA. Note that this FPGA configuration will be reset
 --   at the next power cycle.
--- @param   fpga        Full path to FPGA bitstream
+-- pass Full path to FPGA bitstream
 bladeRFLoadFPGA :: String -> BladeRF ()
 bladeRFLoadFPGA s = do
   p <- liftIO $ newCString s
@@ -149,3 +150,13 @@ bladeRFGetFPGASize  = do
   sz <- liftIO $ peek p
   liftIO $ free p
   return $ (toEnum . fromEnum) sz
+
+
+-- | Enable or disable the specified RX/TX module.
+--   When a synchronous stream is associated with the specified module, this
+--   will shut down the underlying asynchronous stream when `enable` = false.
+bladeRFEnableModule :: BladeRFModule -> Bool -> BladeRF ()
+bladeRFEnableModule m t = do
+  dev <- BladeRF $ lift get
+  liftIO $ c'bladerf_enable_module dev ((fromIntegral . fromEnum) m) t
+  return () -- XXX ignore ret

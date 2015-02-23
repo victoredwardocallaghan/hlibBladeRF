@@ -12,7 +12,7 @@
 
 module LibBladeRF.Flash ( bladeRFEraseFlash
                         , bladeRFReadFlash
-                        , bladeRFWriteFlash
+--                        , bladeRFWriteFlash
                         ) where
 
 import Foreign
@@ -32,8 +32,7 @@ import LibBladeRF.LibBladeRF
 bladeRFEraseFlash :: Word32 -> Word32 -> BladeRF CInt
 bladeRFEraseFlash b c = do
   dev <- BladeRF $ lift get
-  ret <- liftIO $ c'bladerf_erase_flash dev b c
-  return ret
+  liftIO $ c'bladerf_erase_flash dev b c
 
 --
 -- | Read data from the bladeRF's SPI flash

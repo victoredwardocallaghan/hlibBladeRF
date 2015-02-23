@@ -25,7 +25,8 @@ module LibBladeRF.Gain ( -- * set,get TxVGA2
                        , bladeRFSetLNAGain
                        , bladeRFGetLNAGain
                        -- * Optimal gain control
-                       , bladeRFSetTXGain
+-- XXX symb not found!!!
+--                       , bladeRFSetTXGain
                        , bladeRFSetGain
                        ) where
 
@@ -141,11 +142,12 @@ bladeRFGetLNAGain  = do
 -- | Set a combined VGA TX gain
 --   This function computes the optimal TXVGA1 and TXVGA2 gains for a requested
 --   amount of gain
-bladeRFSetTXGain :: Int -> BladeRF ()
-bladeRFSetTXGain g = do
-  dev <- BladeRF $ lift get
-  liftIO $ c'bladerf_set_tx_gain dev (fromIntegral g)
-  return () -- ignores ret
+-- XXX symb not found!!!
+--bladeRFSetTXGain :: Int -> BladeRF ()
+--bladeRFSetTXGain g = do
+--  dev <- BladeRF $ lift get
+--  liftIO $ c'bladerf_set_tx_gain dev (fromIntegral g)
+--  return () -- ignores ret
 
 -- | Set a combined pre and post LPF RX gain
 --   This function computes the optimal LNA, RXVGA1, and RVGA2 gains for a
