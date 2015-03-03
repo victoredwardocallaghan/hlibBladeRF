@@ -24,10 +24,6 @@ import Foreign
 import Foreign.C.Types
 import Foreign.C.String
 
-import Control.Monad.Trans
-import Control.Monad.Trans.State
-import Control.Monad.IO.Class
-
 import Bindings.LibBladeRF
 import LibBladeRF.LibBladeRF
 import LibBladeRF.Types
@@ -69,7 +65,7 @@ bladeRFFwVersion dev = do
 -- | Query FPGA version
 bladeRFFPGAVersion :: DeviceHandle -> IO BladeRFVersion
 bladeRFFPGAVersion dev = do
-  status <- liftIO $ c'bladerf_is_fpga_configured (unDeviceHandle dev)
+  status <- c'bladerf_is_fpga_configured (unDeviceHandle dev)
   if status > 0 then do
     p <- malloc :: IO (Ptr C'bladerf_version)
     c'bladerf_fpga_version (unDeviceHandle dev) p

@@ -34,10 +34,6 @@ import Foreign
 import Foreign.C.Types
 import Foreign.C.String
 
-import Control.Monad.Trans
-import Control.Monad.Trans.State
-import Control.Monad.IO.Class
-
 import Bindings.LibBladeRF
 import LibBladeRF.LibBladeRF
 import LibBladeRF.Types
@@ -88,7 +84,7 @@ bladeRFSetRXVGA2 dev g = do
 -- | Get the post-LPF VGA gain
 bladeRFGetRXVGA2 :: DeviceHandle -> IO Int
 bladeRFGetRXVGA2 dev = do
-  p <- liftIO (malloc :: IO (Ptr CInt))
+  p <- malloc :: IO (Ptr CInt)
   c'bladerf_get_rxvga2 (unDeviceHandle dev) p
   g <-  peek p
   free p
