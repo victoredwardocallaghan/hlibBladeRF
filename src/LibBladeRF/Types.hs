@@ -19,6 +19,7 @@ module LibBladeRF.Types ( BladeRFVersion(..)
                         , BladeRFLNAGain(..)
                         , BladeRFVGAGainBounds(..)
                         , BladeRFCorrection(..)
+                        , BladeRFSpeed(..)
                         ) where
 
 
@@ -217,3 +218,23 @@ corrections = [ (CORR_LMS_DCOFF_I, c'BLADERF_CORR_LMS_DCOFF_I)
               , (CORR_FPGA_PHASE, c'BLADERF_CORR_FPGA_PHASE)
               , (CORR_FPGA_GAIN, c'BLADERF_CORR_FPGA_GAIN)
               ]
+
+
+data BladeRFSpeed = DEVICE_SPEED_UNKNOWN
+                  | DEVICE_SPEED_HIGH
+                  | DEVICE_SPEED_SUPER
+                   deriving (Eq)
+
+instance Show BladeRFSpeed where
+  show DEVICE_SPEED_UNKNOWN = "unknown speed"
+  show DEVICE_SPEED_HIGH    = "high speed"
+  show DEVICE_SPEED_SUPER   = "super speed"
+
+instance Enum BladeRFSpeed where
+  fromEnum = fromJust . flip lookup speeds
+  toEnum   = fromJust . flip lookup (map swap speeds)
+
+speeds = [ (DEVICE_SPEED_UNKNOWN, c'BLADERF_DEVICE_SPEED_UNKNOWN)
+         , (DEVICE_SPEED_HIGH, c'BLADERF_DEVICE_SPEED_HIGH)
+         , (DEVICE_SPEED_SUPER, c'BLADERF_DEVICE_SPEED_SUPER)
+         ]

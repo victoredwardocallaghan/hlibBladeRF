@@ -62,9 +62,9 @@ bladeRFGetTXVGA2 dev = do
 
 --
 -- | Set the post-LPF gain in dB
-bladeRFSetTXVGA1 :: DeviceHandle -> Int -> IO ()
+bladeRFSetTXVGA1 :: DeviceHandle -> BladeRFVGAGainBounds -> IO ()
 bladeRFSetTXVGA1 dev g = do
-  c'bladerf_set_txvga1 (unDeviceHandle dev) (fromIntegral g)
+  c'bladerf_set_txvga1 (unDeviceHandle dev) ((fromIntegral . fromEnum) g)
   return () -- ignores ret
 
 --
@@ -79,9 +79,9 @@ bladeRFGetTXVGA1 dev = do
 
 --
 -- | Set the post-LPF VGA gain
-bladeRFSetRXVGA2 :: DeviceHandle -> Int -> IO ()
+bladeRFSetRXVGA2 :: DeviceHandle -> BladeRFVGAGainBounds -> IO ()
 bladeRFSetRXVGA2 dev g = do
-  c'bladerf_set_rxvga2 (unDeviceHandle dev) (fromIntegral g)
+  c'bladerf_set_rxvga2 (unDeviceHandle dev) ((fromIntegral . fromEnum) g)
   return () -- ignores ret
 
 --
@@ -96,9 +96,9 @@ bladeRFGetRXVGA2 dev = do
 
 --
 -- | Set the pre-LPF VGA gain
-bladeRFSetRXVGA1 :: DeviceHandle -> Int -> IO ()
+bladeRFSetRXVGA1 :: DeviceHandle -> BladeRFVGAGainBounds -> IO ()
 bladeRFSetRXVGA1 dev g = do
-  c'bladerf_set_rxvga1 (unDeviceHandle dev) (fromIntegral g)
+  c'bladerf_set_rxvga1 (unDeviceHandle dev) ((fromIntegral . fromEnum) g)
   return () -- ignores ret
 
 --

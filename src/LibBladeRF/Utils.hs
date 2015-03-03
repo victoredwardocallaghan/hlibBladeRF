@@ -102,10 +102,10 @@ bladeRFLoadFPGA dev s = do
 
 --
 -- | Obtain the bus speed at which the device is operating
-bladeRFDeviceSpeed :: DeviceHandle -> IO Word32
+bladeRFDeviceSpeed :: DeviceHandle -> IO BladeRFSpeed
 bladeRFDeviceSpeed dev = do
   speed <- c'bladerf_device_speed (unDeviceHandle dev)
-  return $ fromIntegral speed
+  return $ (toEnum . fromEnum) speed
 
 --
 -- | Fill out a provided bladerf_devinfo structure, given an open device handle.
