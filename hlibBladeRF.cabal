@@ -48,6 +48,7 @@ library
                        Bindings.LibBladeRF.Gpio
                        Bindings.LibBladeRF.Types
 
+                       LibBladeRF
                        LibBladeRF.LibBladeRF
                        LibBladeRF.Sampling
                        LibBladeRF.Sync
