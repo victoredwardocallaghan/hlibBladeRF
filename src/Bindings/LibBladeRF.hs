@@ -10,6 +10,8 @@
   C functions into a common namespace.
 -}
 
+{-# OPTIONS_HADDOCK hide, prune #-}
+
 module Bindings.LibBladeRF (module X) where
 
 import Bindings.LibBladeRF.LibBladeRF as X

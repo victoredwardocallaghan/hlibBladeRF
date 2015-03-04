@@ -1,6 +1,8 @@
 #include <bindings.dsl.h>
 #include <libbladeRF.h>
 
+{-# OPTIONS_HADDOCK hide #-}
+
 module Bindings.LibBladeRF.LibBladeRF where
 
 #strict_import
