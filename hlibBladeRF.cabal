@@ -74,4 +74,3 @@ source-repository head
   type:                git
   location:            git://github.com/victoredwardocallaghan/hlibBladeRF
   branch:              master
-  subdir:              bindings-hlibbladeRF
