@@ -37,18 +37,7 @@ test-suite hlint
 --------------------------------------------
 
 library
-  exposed-modules:     Bindings.LibBladeRF
-                       Bindings.LibBladeRF.LibBladeRF
-                       Bindings.LibBladeRF.Utils
-                       Bindings.LibBladeRF.Flash
-                       Bindings.LibBladeRF.Si5338
-                       Bindings.LibBladeRF.Sync
-                       Bindings.LibBladeRF.Lms
-                       Bindings.LibBladeRF.Gain
-                       Bindings.LibBladeRF.Gpio
-                       Bindings.LibBladeRF.Types
-
-                       LibBladeRF
+  exposed-modules:     LibBladeRF
                        LibBladeRF.LibBladeRF
                        LibBladeRF.Sampling
                        LibBladeRF.Sync
@@ -58,7 +47,17 @@ library
                        LibBladeRF.Frequency
                        LibBladeRF.Utils
                        LibBladeRF.Types
-  -- other-modules:       
+
+  other-modules:       Bindings.LibBladeRF
+                       Bindings.LibBladeRF.LibBladeRF
+                       Bindings.LibBladeRF.Utils
+                       Bindings.LibBladeRF.Flash
+                       Bindings.LibBladeRF.Si5338
+                       Bindings.LibBladeRF.Sync
+                       Bindings.LibBladeRF.Lms
+                       Bindings.LibBladeRF.Gain
+                       Bindings.LibBladeRF.Gpio
+                       Bindings.LibBladeRF.Types
   -- other-extensions:    
   default-extensions:  ForeignFunctionInterface
   build-depends:       base >=4 && <4.8,
