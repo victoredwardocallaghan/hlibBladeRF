@@ -13,9 +13,11 @@
 -}
 
 {-# LANGUAGE DeriveDataTypeable #-}
+{-# OPTIONS_HADDOCK prune #-}
 
 module LibBladeRF.LibBladeRF ( withBladeRF
                              , DeviceHandle(..)
+                             , BladeRFError(..)
                              ) where
 
 import Foreign
@@ -30,20 +32,20 @@ import Bindings.LibBladeRF
 
 
 -- | Error codes returned by internal libbladeRF functions.
-data BladeRFError = BLADERF_ERR_UNEXPECTED
-                  | BLADERF_ERR_RANGE
-                  | BLADERF_ERR_INVAL
-                  | BLADERF_ERR_MEM
-                  | BLADERF_ERR_IO
-                  | BLADERF_ERR_TIMEOUT
-                  | BLADERF_ERR_NODEV
-                  | BLADERF_ERR_UNSUPPORTED
-                  | BLADERF_ERR_MISALIGNED
-                  | BLADERF_ERR_CHECKSUM
-                  | BLADERF_ERR_NO_FILE
-                  | BLADERF_ERR_UPDATE_FPGA
-                  | BLADERF_ERR_UPDATE_FW
-                  | BLADERF_ERR_TIME_PAST
+data BladeRFError = BLADERF_ERR_UNEXPECTED  -- ^ An unexpected failure occurred
+                  | BLADERF_ERR_RANGE       -- ^ Provided parameter is out of range
+                  | BLADERF_ERR_INVAL       -- ^ Invalid operation/parameter
+                  | BLADERF_ERR_MEM         -- ^ Memory allocation error
+                  | BLADERF_ERR_IO          -- ^ File/Device I/O error
+                  | BLADERF_ERR_TIMEOUT     -- ^ Operation timed out
+                  | BLADERF_ERR_NODEV       -- ^ No device(s) available
+                  | BLADERF_ERR_UNSUPPORTED -- ^ Operation not supported
+                  | BLADERF_ERR_MISALIGNED  -- ^ Misaligned flash access
+                  | BLADERF_ERR_CHECKSUM    -- ^ Invalid checksum
+                  | BLADERF_ERR_NO_FILE     -- ^ File not found
+                  | BLADERF_ERR_UPDATE_FPGA -- ^ An FPGA update is required
+                  | BLADERF_ERR_UPDATE_FW   -- ^ A firmware update is requied
+                  | BLADERF_ERR_TIME_PAST   -- ^ Requested timestamp is in the past
                    deriving (Typeable)
 
 instance Show BladeRFError where
@@ -64,9 +66,10 @@ instance Show BladeRFError where
 
 instance Exception BladeRFError
 
+-- | DeviceHandle wrapper around C device descriptor pointer
 newtype DeviceHandle = DeviceHandle { unDeviceHandle :: Ptr C'bladerf }
 
--- | essential wrapper
+-- | Essential wrapper
 withBladeRF :: (DeviceHandle -> IO a) -> IO ()
 withBladeRF body = do
   dev <- openBladeRF
