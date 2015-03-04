@@ -12,12 +12,14 @@
 
 module LibBladeRF.Flash ( bladeRFEraseFlash
                         , bladeRFReadFlash
---                        , bladeRFWriteFlash
+                        , bladeRFWriteFlash
                         ) where
 
 import Foreign
 import Foreign.C.Types
 import Foreign.C.String
+
+import qualified Data.ByteString as BS
 
 import Bindings.LibBladeRF
 import LibBladeRF.LibBladeRF
@@ -47,11 +49,13 @@ bladeRFReadFlash dev p c = do
   return (ret, buffer)
 
 -- | Write data from the bladeRF's SPI flash
--- FIXME - how to pass in a buffer of data???
---bladeRFWriteFlash :: DeviceHandle -> Word32 -> Word32 -> IO (CInt, Word8)
---bladeRFWriteFlash dev p c = do
---  bptr <- malloc :: IO (Ptr Word8)
---  ret <- c'bladerf_write_flash (unDeviceHandle dev) bptr p c
---  buffer <- peek bptr
---  free bptr
---  return (ret, buffer)
+-- XXX - Buffer allocation size must be `page` * BLADERF_FLASH_PAGE_SIZE bytes or larger.
+bladeRFWriteFlash :: DeviceHandle     -- ^ Device handle
+                  -> BS.ByteString    -- ^ Data to write to flash
+                  -> Word32           -- ^ page  Page to begin writing at
+                  -> Word32           -- ^ count
+                  -> IO ()
+bladeRFWriteFlash dev b p c = allocaBytes (fromIntegral $ p * c'BLADERF_FLASH_PAGE_SIZE) $ \bptr -> do
+  pokeArray bptr (BS.unpack b) -- XXX can we overflow here??
+  _ <- c'bladerf_write_flash (unDeviceHandle dev) bptr p c
+  return () -- ignore ret
