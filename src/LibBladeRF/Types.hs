@@ -9,6 +9,8 @@
   This module encapsulates types libbladeRF library functions.
 -}
 
+-- {-# LANGUAGE DeriveGeneric #-}
+
 module LibBladeRF.Types ( BladeRFVersion(..)
                         , BladeRFDeviceInfo(..)
                         , BladeRFFPGASize(..)
@@ -20,6 +22,10 @@ module LibBladeRF.Types ( BladeRFVersion(..)
                         , BladeRFVGAGainBounds(..)
                         , BladeRFCorrection(..)
                         , BladeRFSpeed(..)
+                        , BladeRFMetadata(..)
+--                        needs ghc >= 7.8
+--                        , bladeRFMetadataToCBladeRFMetadata
+--                        , bladeRFMetadataFromCBladeRFMetadata
                         ) where
 
 
@@ -30,6 +36,8 @@ import Foreign.C.Types
 import Foreign.C.String
 import Data.Maybe
 import Data.Tuple
+--import Data.Coerce
+--import GHC.Generics
 
 --
 -- | Version structure for FPGA, firmware, libbladeRF, and associated utilities
@@ -238,3 +246,18 @@ speeds = [ (DEVICE_SPEED_UNKNOWN, c'BLADERF_DEVICE_SPEED_UNKNOWN)
          , (DEVICE_SPEED_HIGH, c'BLADERF_DEVICE_SPEED_HIGH)
          , (DEVICE_SPEED_SUPER, c'BLADERF_DEVICE_SPEED_SUPER)
          ]
+
+
+-- | ..
+data BladeRFMetadata = BladeRFMetadata { timestamp :: Word64
+                                       , flags     :: Word32
+                                       , status    :: Word32
+                                       , count     :: Int
+                                       }
+
+-- | Isomorpishms
+--bladeRFMetadataToCBladeRFMetadata :: BladeRFMetadata -> C'bladerf_metadata
+--bladeRFMetadataToCBladeRFMetadata  = to . coerce . from
+--
+--bladeRFMetadataFromCBladeRFMetadata :: C'bladerf_metadata -> BladeRFMetadata
+--bladeRFMetadataFromCBladeRFMetadata  = to . coerce . from
