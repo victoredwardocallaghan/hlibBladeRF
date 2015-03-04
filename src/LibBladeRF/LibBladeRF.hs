@@ -29,7 +29,6 @@ import Data.Typeable (Typeable, cast)
 import Bindings.LibBladeRF
 
 
---
 -- | Error codes returned by internal libbladeRF functions.
 data BladeRFError = BLADERF_ERR_UNEXPECTED
                   | BLADERF_ERR_RANGE
@@ -82,7 +81,6 @@ openBladeRF = do
     Left e -> throwIO e
     Right dev -> return dev
 
---
 -- Open specified device using a device identifier string.
 -- See bladerf_open_with_devinfo() if a device identifier string
 -- is not readily available.

@@ -9,7 +9,7 @@
   This module encapsulates types libbladeRF library functions.
 -}
 
--- {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE Trustworthy, DeriveGeneric #-}
 
 module LibBladeRF.Types ( BladeRFVersion(..)
                         , BladeRFDeviceInfo(..)
@@ -31,9 +31,8 @@ module LibBladeRF.Types ( BladeRFVersion(..)
 
 import Bindings.LibBladeRF
 
-import Foreign
 import Foreign.C.Types
-import Foreign.C.String
+import Data.Word
 import Data.Maybe
 import Data.Tuple
 --import Data.Coerce
@@ -57,7 +56,7 @@ instance Show BladeRFVersion where
 -- | Information about a bladeRF attached to the system
 data BladeRFDeviceInfo = BladeRFDeviceInfo { backend :: BladeRFBackend -- ^ Backend to use when connecting to device
                                            , serial  :: String         -- ^ Device serial number string
-                                           , usbBus  :: Word8          -- ^ Bus # device is attached to
+                                           , usbBus  :: Word8          -- ^ Bus number device is attached to
                                            , usbAddr :: Word8          -- ^ Device address on bus
                                            , inst    :: CUInt          -- ^ Device instance or ID
                                            } deriving (Eq)
@@ -138,9 +137,49 @@ modules = [ (MODULE_RX, c'BLADERF_MODULE_RX)
 
 
 -- | Sample format
-data BladeRFFormat = FORMAT_SC16_Q11
-                   | FORMAT_SC16_Q11_META
-                   deriving (Eq)
+data BladeRFFormat
+  {-| Signed, Complex 16-bit Q11. This is the native format of the DAC data.
+
+      Values in the range [-2048, 2048) are used to represent [-1.0, 1.0).
+      Note that the lower bound here is inclusive, and the upper bound is
+      exclusive. Ensure that provided samples stay within [-2048, 2047].
+
+      Samples consist of interleaved IQ value pairs, with I being the first
+      value in the pair. Each value in the pair is a right-aligned,
+      little-endian int16_t. The FPGA ensures that these values are
+      sign-extended.
+
+      When using this format the minimum required buffer size, in bytes, is:
+
+      > buffer_size_min = [ 2 * num_samples * sizeof(int16_t) ]
+
+      For example, to hold 2048 samples, a buffer must be at least 8192 bytes
+      large.
+  -}
+  = FORMAT_SC16_Q11
+  {-| This format is the same as the 'FORMAT_SC16_Q11' format, except the
+    first 4 samples (16 bytes) in every block of 1024 samples are replaced
+    with metadata, organized as follows, with all fields being little endian
+    byte order:
+
+    @
+     0x00 [uint32_t:  Reserved]
+     0x04 [uint64_t:  64-bit Timestamp]
+     0x0c [uint32_t:  BLADERF_META_FLAG_* flags]
+    @
+
+    When using the 'bladeRFSyncRx' and 'bladeRFSyncTx' actions,
+    this detail is transparent to caller. These functions take care of
+    packing/unpacking the metadata into/from the data, via the
+    bladerf_metadata structure.
+
+    Currently, when using the asynchronous data transfer interface, the user
+    is responsible for manually packing/unpacking this metadata into/from
+    their sample data.
+  -}
+  | FORMAT_SC16_Q11_META
+   deriving (Eq)
+
 
 instance Enum BladeRFFormat where
   fromEnum = fromJust . flip lookup formats
@@ -151,11 +190,11 @@ formats = [ (FORMAT_SC16_Q11, c'BLADERF_FORMAT_SC16_Q11)
           ]
 
 
--- | LNA Gain Type??
-data BladeRFLNAGain = LNA_GAIN_UNKNOWN
-                    | LNA_GAIN_BYPASS
-                    | LNA_GAIN_MID
-                    | LNA_GAIN_MAX
+-- | LNA gain options
+data BladeRFLNAGain = LNA_GAIN_UNKNOWN -- ^ Invalid LNA gain
+                    | LNA_GAIN_BYPASS  -- ^ LNA bypassed - 0dB gain
+                    | LNA_GAIN_MID     -- ^ LNA Mid Gain (MAX-6dB)
+                    | LNA_GAIN_MAX     -- ^ LNA Max Gain
                     deriving (Eq)
 
 instance Enum BladeRFLNAGain where
@@ -168,7 +207,6 @@ lgains = [ (LNA_GAIN_UNKNOWN, c'BLADERF_LNA_GAIN_UNKNOWN)
          , (LNA_GAIN_MAX, c'BLADERF_LNA_GAIN_MAX)
          ]
 
---
 -- | Device control and configuration
 --
 -- This section provides functions pertaining to accessing, controlling, and
@@ -197,13 +235,12 @@ vgains = [ (RXVGA1_GAIN_MIN, c'BLADERF_RXVGA1_GAIN_MIN)
          , (TXVGA2_GAIN_MAX, c'BLADERF_TXVGA2_GAIN_MAX)
          ]
 
---
 -- | Correction parameter selection
 --
---   These values specify the correction parameter to modify or query when
---   calling bladerf_set_correction() or bladerf_get_correction(). Note that the
---   meaning of the `value` parameter to these functions depends upon the
---   correction parameter.
+-- These values specify the correction parameter to modify or query when
+-- calling bladerf_set_correction() or bladerf_get_correction(). Note that the
+-- meaning of the `value` parameter to these functions depends upon the
+-- correction parameter.
 data BladeRFCorrection = CORR_LMS_DCOFF_I -- ^ Adjusts the in-phase DC offset via controls provided by the LMS6002D
                                           --   front end. Valid values are [-2048, 2048], which are scaled to the
                                           --   available control bits in the LMS device.
@@ -228,9 +265,12 @@ corrections = [ (CORR_LMS_DCOFF_I, c'BLADERF_CORR_LMS_DCOFF_I)
               ]
 
 
-data BladeRFSpeed = DEVICE_SPEED_UNKNOWN
-                  | DEVICE_SPEED_HIGH
-                  | DEVICE_SPEED_SUPER
+-- | This enum describes the USB Speed at which the bladeRF is connected.
+--
+-- Speeds not listed here are not supported.
+data BladeRFSpeed = DEVICE_SPEED_UNKNOWN -- ^ Unknown
+                  | DEVICE_SPEED_HIGH    -- ^ USB2.0
+                  | DEVICE_SPEED_SUPER   -- ^ USB3.0
                    deriving (Eq)
 
 instance Show BladeRFSpeed where
@@ -248,12 +288,22 @@ speeds = [ (DEVICE_SPEED_UNKNOWN, c'BLADERF_DEVICE_SPEED_UNKNOWN)
          ]
 
 
--- | ..
-data BladeRFMetadata = BladeRFMetadata { timestamp :: Word64
-                                       , flags     :: Word32
-                                       , status    :: Word32
-                                       , count     :: Int
+-- | Sample metadata
+--
+-- This structure is used in conjunction with the 'FORMAT_SC16_Q11_META'
+-- format to TX scheduled bursts or retrieve timestamp information about
+-- received samples.
+data BladeRFMetadata = BladeRFMetadata { timestamp :: Word64 -- ^ Free-running FPGA counter that monotonically increases
+                                                             --   at the sample rate of the associated module.
+                                       , flags     :: Word32 -- ^ Input bit field to control the behavior of the call
+                                                             --   that the metadata structure is passed to.
+                                       , status    :: Word32 -- ^ Output bit field to denoting the status of
+                                                             --   transmissions/receptions.
+                                       , count     :: Int    -- ^ This output parameter is updated to reflect the actual
+                                                             --   number of contiguous samples that have been populated
+                                                             --   in an RX buffer during a 'bladeRFSyncRx' call.
                                        }
+
 
 -- | Isomorpishms
 --bladeRFMetadataToCBladeRFMetadata :: BladeRFMetadata -> C'bladerf_metadata

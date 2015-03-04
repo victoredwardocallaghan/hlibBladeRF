@@ -36,7 +36,6 @@ import LibBladeRF.LibBladeRF
 import LibBladeRF.Types
 
 
---
 -- | (Re)Configure a device for synchronous transmission or reception
 bladeRFSyncConfig :: DeviceHandle  -- ^ Device handle
                   -> BladeRFModule -- ^ Module to use with synchronous interface
@@ -51,8 +50,6 @@ bladeRFSyncConfig dev m f nb sz tr to = do
   c'bladerf_sync_config (unDeviceHandle dev) ((fromIntegral . fromEnum) m) ((fromIntegral . fromEnum) f) (fromIntegral nb) (fromIntegral sz) (fromIntegral tr) (fromIntegral to)
   return () -- ignores ret
 
-
---
 -- | Transmit IQ samples.
 --
 -- Under the hood, this call starts up an underlying asynchronous stream as
@@ -69,7 +66,7 @@ bladeRFSyncTx :: DeviceHandle    -- ^ Device handle
                                  --   the ::BLADERF_FORMAT_SC16_Q11_META format, but may
                                  --   be NULL when the interface is configured for
                                  --   the ::BLADERF_FORMAT_SC16_Q11 format.
-              -> Int             -- ^ Timeout (milliseconds) for this call to complete. Zero implies "infinite."
+              -> Int             -- ^ Timeout (milliseconds) for this call to complete. Zero implies infinite.
               -> IO ()
 bladeRFSyncTx dev s n md t = do
   pmd <- malloc :: IO (Ptr C'bladerf_metadata)
@@ -86,7 +83,6 @@ bladeRFSyncTx dev s n md t = do
     \(p, _len) -> c'bladerf_sync_tx (unDeviceHandle dev) p (fromIntegral n) pmd (fromIntegral t)
   free pmd
 
---
 -- | Receive IQ samples.
 --
 -- Underthe hood, this call starts up an underlying asynchronous stream as
@@ -94,7 +90,7 @@ bladeRFSyncTx dev s n md t = do
 -- bladeRFEnableModule for more details.)
 bladeRFSyncRx :: DeviceHandle    -- ^ Device handle
               -> Int             -- ^ Number of samples to read
-              -> Int             -- ^ Timeout (milliseconds) for this call to complete. Zero implies "infinite."
+              -> Int             -- ^ Timeout (milliseconds) for this call to complete. Zero implies infinite.
               -> IO (BS.ByteString, BladeRFMetadata)
 bladeRFSyncRx dev n t = do
   pmd <- malloc :: IO (Ptr C'bladerf_metadata)

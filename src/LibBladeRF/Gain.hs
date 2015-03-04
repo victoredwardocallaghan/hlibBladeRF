@@ -39,16 +39,17 @@ import LibBladeRF.LibBladeRF
 import LibBladeRF.Types
 
 
---
 -- | Set the PA gain in dB
-bladeRFSetTXVGA2 :: DeviceHandle -> Int -> IO ()
+bladeRFSetTXVGA2 :: DeviceHandle -- ^ Device handle
+                 -> Int          -- ^ Desired gain
+                 -> IO ()
 bladeRFSetTXVGA2 dev g = do
   c'bladerf_set_txvga2 (unDeviceHandle dev) (fromIntegral g)
   return () -- ignores ret
 
---
 -- | Get the PA gain in dB
-bladeRFGetTXVGA2 :: DeviceHandle -> IO Int
+bladeRFGetTXVGA2 :: DeviceHandle -- ^ Device handle
+                 -> IO Int       -- ^ Returned gain
 bladeRFGetTXVGA2 dev = do
   p <- malloc :: IO (Ptr CInt)
   c'bladerf_get_txvga2 (unDeviceHandle dev) p
@@ -56,16 +57,17 @@ bladeRFGetTXVGA2 dev = do
   free p
   return $ fromIntegral g
 
---
 -- | Set the post-LPF gain in dB
-bladeRFSetTXVGA1 :: DeviceHandle -> BladeRFVGAGainBounds -> IO ()
+bladeRFSetTXVGA1 :: DeviceHandle         -- ^ Device handle
+                 -> BladeRFVGAGainBounds -- ^ Desired gain
+                 -> IO ()
 bladeRFSetTXVGA1 dev g = do
   c'bladerf_set_txvga1 (unDeviceHandle dev) ((fromIntegral . fromEnum) g)
   return () -- ignores ret
 
---
 -- | Get the post-LPF gain in dB
-bladeRFGetTXVGA1 :: DeviceHandle -> IO Int
+bladeRFGetTXVGA1 :: DeviceHandle -- ^ Device handle
+                 -> IO Int       -- ^ Returned gain
 bladeRFGetTXVGA1 dev = do
   p <- malloc :: IO (Ptr CInt)
   c'bladerf_get_txvga1 (unDeviceHandle dev) p
@@ -73,16 +75,17 @@ bladeRFGetTXVGA1 dev = do
   free p
   return $ fromIntegral g
 
---
 -- | Set the post-LPF VGA gain
-bladeRFSetRXVGA2 :: DeviceHandle -> BladeRFVGAGainBounds -> IO ()
+bladeRFSetRXVGA2 :: DeviceHandle         -- ^ Device handle
+                 -> BladeRFVGAGainBounds -- ^ Desired gain
+                 -> IO ()
 bladeRFSetRXVGA2 dev g = do
   c'bladerf_set_rxvga2 (unDeviceHandle dev) ((fromIntegral . fromEnum) g)
   return () -- ignores ret
 
---
 -- | Get the post-LPF VGA gain
-bladeRFGetRXVGA2 :: DeviceHandle -> IO Int
+bladeRFGetRXVGA2 :: DeviceHandle -- ^ Device handle
+                 -> IO Int       -- ^ Returned set gain level
 bladeRFGetRXVGA2 dev = do
   p <- malloc :: IO (Ptr CInt)
   c'bladerf_get_rxvga2 (unDeviceHandle dev) p
@@ -90,16 +93,17 @@ bladeRFGetRXVGA2 dev = do
   free p
   return $ fromIntegral g
 
---
 -- | Set the pre-LPF VGA gain
-bladeRFSetRXVGA1 :: DeviceHandle -> BladeRFVGAGainBounds -> IO ()
+bladeRFSetRXVGA1 :: DeviceHandle         -- ^ Device handle
+                 -> BladeRFVGAGainBounds -- ^ Desired gain
+                 -> IO ()
 bladeRFSetRXVGA1 dev g = do
   c'bladerf_set_rxvga1 (unDeviceHandle dev) ((fromIntegral . fromEnum) g)
   return () -- ignores ret
 
---
 -- | Get the pre-LPF VGA gain
-bladeRFGetRXVGA1 :: DeviceHandle -> IO Int
+bladeRFGetRXVGA1 :: DeviceHandle -- ^ Device handle
+                 -> IO Int       -- ^ Returned set gain level
 bladeRFGetRXVGA1 dev = do
   p <- malloc :: IO (Ptr CInt)
   c'bladerf_get_rxvga1 (unDeviceHandle dev) p
@@ -107,16 +111,17 @@ bladeRFGetRXVGA1 dev = do
   free p
   return $ fromIntegral g
 
---
 -- | Set LNA Gain
-bladeRFSetLNAGain :: DeviceHandle -> BladeRFLNAGain -> IO ()
+bladeRFSetLNAGain :: DeviceHandle   -- ^ Device handle
+                  -> BladeRFLNAGain -- ^ Desired gain level
+                  -> IO ()
 bladeRFSetLNAGain dev g = do
   c'bladerf_set_lna_gain (unDeviceHandle dev) ((fromIntegral . fromEnum) g)
   return () -- ignores ret
 
---
 -- | Get LNA Gain
-bladeRFGetLNAGain :: DeviceHandle -> IO BladeRFLNAGain
+bladeRFGetLNAGain :: DeviceHandle      -- ^ Device handle
+                  -> IO BladeRFLNAGain -- ^ Returned set gain level
 bladeRFGetLNAGain dev = do
   p <- malloc :: IO (Ptr C'bladerf_lna_gain)
   c'bladerf_get_lna_gain (unDeviceHandle dev) p
@@ -138,7 +143,10 @@ bladeRFGetLNAGain dev = do
 --   This function computes the optimal LNA, RXVGA1, and RVGA2 gains for a
 --   requested amount of RX gain, and computes the optimal TXVGA1 and TXVGA2 gains
 --   for a requested amount of TX gain
-bladeRFSetGain :: DeviceHandle -> BladeRFModule -> Int -> IO ()
+bladeRFSetGain :: DeviceHandle  -- ^ Device handle
+               -> BladeRFModule -- ^ Module
+               -> Int           -- ^ Desired gain
+               -> IO ()
 bladeRFSetGain dev m g = do
   c'bladerf_set_gain (unDeviceHandle dev) ((fromIntegral . fromEnum) m) (fromIntegral g)
   return () -- ignores ret

@@ -23,11 +23,13 @@ import LibBladeRF.LibBladeRF
 import LibBladeRF.Types
 
 
---
 -- | Configure the device's sample rate, in Hz.  Note this requires the sample
 --   rate is an integer value of Hz.  Use bladeRFSetRationalSampleRate
 --   for more arbitrary values.
-bladeRFSetSampleRate :: DeviceHandle -> BladeRFModule -> Int -> IO Int
+bladeRFSetSampleRate :: DeviceHandle  -- ^ Device handle
+                     -> BladeRFModule -- ^ Module to change
+                     -> Int           -- ^ Sample rate
+                     -> IO Int        -- ^ Actual sample rate achieved.
 bladeRFSetSampleRate dev m r = do
   par <- malloc :: IO (Ptr CUInt)
   c'bladerf_set_sample_rate (unDeviceHandle dev) ((fromIntegral . fromEnum) m) (fromIntegral r) par
@@ -35,10 +37,12 @@ bladeRFSetSampleRate dev m r = do
   free par
   return $ fromIntegral actual
 
---
 -- | Configure the device's sample rate as a rational fraction of Hz.
 --   Sample rates are in the form of integer + num/denom.
-bladeRFSetRationalSampleRate :: DeviceHandle -> BladeRFModule -> BladeRFRationalRate -> IO BladeRFRationalRate
+bladeRFSetRationalSampleRate :: DeviceHandle           -- ^ Device handle
+                             -> BladeRFModule          -- ^ Module to change
+                             -> BladeRFRationalRate    -- ^ Rational sample rate
+                             -> IO BladeRFRationalRate -- ^ Actual rational sample rate achieved.
 bladeRFSetRationalSampleRate dev m r = do
   pr <- malloc :: IO (Ptr C'bladerf_rational_rate)
   par <- malloc :: IO (Ptr C'bladerf_rational_rate)
@@ -57,9 +61,11 @@ bladeRFSetRationalSampleRate dev m r = do
   free par
   return actual
 
---
 -- | Set the bandwidth of the LMS LPF to specified value in Hz
-bladeRFSetBandwidth :: DeviceHandle -> BladeRFModule -> Int -> IO Int
+bladeRFSetBandwidth :: DeviceHandle  -- ^ Device handle
+                    -> BladeRFModule -- ^ Module for bandwidth request
+                    -> Int           -- ^ Desired bandwidth
+                    -> IO Int        -- ^ Actual bandwidth that the device was able to achieve.
 bladeRFSetBandwidth dev m b = do
   ab <- malloc :: IO (Ptr CUInt)
   c'bladerf_set_bandwidth (unDeviceHandle dev) ((fromIntegral . fromEnum) m) (fromIntegral b) ab

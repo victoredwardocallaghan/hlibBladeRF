@@ -22,9 +22,9 @@ import LibBladeRF.LibBladeRF
 import LibBladeRF.Types
 
 
---
 -- | Read a configuration GPIO register
-bladeRFConfigGPIORead :: DeviceHandle -> IO Word32
+bladeRFConfigGPIORead :: DeviceHandle -- ^ Device handle
+                      -> IO Word32    -- ^ Read data
 bladeRFConfigGPIORead dev = do
   pv <- malloc :: IO (Ptr Word32)
   c'bladerf_config_gpio_read (unDeviceHandle dev) pv
@@ -32,11 +32,13 @@ bladeRFConfigGPIORead dev = do
   free pv
   return v
 
---
 -- | Write a configuration GPIO register. Callers should be sure to perform a
+--
 --   read-modify-write sequence to avoid accidentally clearing other
 --   GPIO bits that may be set by the library internally.
-bladeRFConfigGPIOWrite :: DeviceHandle -> Word32 -> IO ()
+bladeRFConfigGPIOWrite :: DeviceHandle -- ^ Device handle
+                       -> Word32       -- ^ Data to write to GPIO register
+                       -> IO ()
 bladeRFConfigGPIOWrite dev v = do
   c'bladerf_config_gpio_write (unDeviceHandle dev) v
   return () -- ignores ret
