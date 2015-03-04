@@ -1,0 +1,5 @@
+Changes in 0.1.0.1
+
+* Add a change log.
+* LibBladeRF/Flash.hs: Provide untested bladeRFWriteFlash action.
+* hlibBladeRF.cabal: Move Bindings.X.Y into other-modules.
