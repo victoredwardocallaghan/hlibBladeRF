@@ -4,7 +4,7 @@
 name:                hlibBladeRF
 version:             0.1.0.0
 synopsis:            Haskell binding to libBladeRF SDR library
-description:         Monadic binding for libbladeRF software defined radio.
+description:         IO Monadic binding for libbladeRF software defined radio.
 homepage:            https://victoredwardocallaghan.github.io/hlibBladeRF
 bug-reports:         https://github.com/victoredwardocallaghan/hlibBladeRF/issues
 license:             LGPL-2.1
