@@ -93,7 +93,7 @@ bladeRFGetRXVGA2 dev = do
   free p
   return $ fromIntegral g
 
--- | Set the pre-LPF VGA gain
+-- | Set the pre-LPF VGA gain.
 bladeRFSetRXVGA1 :: DeviceHandle         -- ^ Device handle
                  -> BladeRFVGAGainBounds -- ^ Desired gain
                  -> IO ()
@@ -101,7 +101,7 @@ bladeRFSetRXVGA1 dev g = do
   c'bladerf_set_rxvga1 (unDeviceHandle dev) ((fromIntegral . fromEnum) g)
   return () -- ignores ret
 
--- | Get the pre-LPF VGA gain
+-- | Get the pre-LPF VGA gain.
 bladeRFGetRXVGA1 :: DeviceHandle -- ^ Device handle
                  -> IO Int       -- ^ Returned set gain level
 bladeRFGetRXVGA1 dev = do
@@ -111,7 +111,7 @@ bladeRFGetRXVGA1 dev = do
   free p
   return $ fromIntegral g
 
--- | Set LNA Gain
+-- | Set LNA Gain.
 bladeRFSetLNAGain :: DeviceHandle   -- ^ Device handle
                   -> BladeRFLNAGain -- ^ Desired gain level
                   -> IO ()
@@ -119,7 +119,7 @@ bladeRFSetLNAGain dev g = do
   c'bladerf_set_lna_gain (unDeviceHandle dev) ((fromIntegral . fromEnum) g)
   return () -- ignores ret
 
--- | Get LNA Gain
+-- | Get LNA Gain.
 bladeRFGetLNAGain :: DeviceHandle      -- ^ Device handle
                   -> IO BladeRFLNAGain -- ^ Returned set gain level
 bladeRFGetLNAGain dev = do
@@ -139,10 +139,11 @@ bladeRFGetLNAGain dev = do
 --  c'bladerf_set_tx_gain (unDeviceHandle dev) (fromIntegral g)
 --  return () -- ignores ret
 
--- | Set a combined pre and post LPF RX gain
---   This function computes the optimal LNA, RXVGA1, and RVGA2 gains for a
---   requested amount of RX gain, and computes the optimal TXVGA1 and TXVGA2 gains
---   for a requested amount of TX gain
+-- | Set a combined pre and post LPF RX gain.
+--
+-- This action computes the optimal LNA, RXVGA1, and RVGA2 gains for a
+-- requested amount of RX gain, and computes the optimal TXVGA1 and TXVGA2
+-- gains for a requested amount of TX gain
 bladeRFSetGain :: DeviceHandle  -- ^ Device handle
                -> BladeRFModule -- ^ Module
                -> Int           -- ^ Desired gain
