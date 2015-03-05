@@ -304,14 +304,6 @@ data BladeRFMetadata = BladeRFMetadata { timestamp :: Word64 -- ^ Free-running F
                                        }
 
 
--- | Isomorpishms
---bladeRFMetadataToCBladeRFMetadata :: BladeRFMetadata -> C'bladerf_metadata
---bladeRFMetadataToCBladeRFMetadata  = to . coerce . from
---
---bladeRFMetadataFromCBladeRFMetadata :: C'bladerf_metadata -> BladeRFMetadata
---bladeRFMetadataFromCBladeRFMetadata  = to . coerce . from
-
-
 -- | Loopback options.
 data BladeRFLoopback = LB_FIRMWARE         -- ^ Firmware loopback inside of the FX3
                      | LB_BB_TXLPF_RXVGA2  -- ^ Baseband loopback. TXLPF output is connected to the RXVGA2 input.
@@ -341,3 +333,12 @@ loopbacks = [ (LB_FIRMWARE, c'BLADERF_LB_FIRMWARE)
             , (LB_RF_LNA3, c'BLADERF_LB_RF_LNA3)
             , (LB_NONE, c'BLADERF_LB_NONE)
             ]
+
+
+
+-- | Isomorpishms
+--bladeRFMetadataToCBladeRFMetadata :: BladeRFMetadata -> C'bladerf_metadata
+--bladeRFMetadataToCBladeRFMetadata  = to . coerce . from
+--
+--bladeRFMetadataFromCBladeRFMetadata :: C'bladerf_metadata -> BladeRFMetadata
+--bladeRFMetadataFromCBladeRFMetadata  = to . coerce . from

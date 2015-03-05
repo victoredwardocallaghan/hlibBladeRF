@@ -47,14 +47,13 @@ bladeRFReadFlash dev p c = alloca $ \bptr -> do
   return (ret, buffer)
 
 -- | Write data from the bladeRF's SPI flash.
---
--- XXX - Buffer allocation size must be `page` * BLADERF_FLASH_PAGE_SIZE bytes or larger.
 bladeRFWriteFlash :: DeviceHandle     -- ^ Device handle
                   -> BS.ByteString    -- ^ Data to write to flash
                   -> Word32           -- ^ page  Page to begin writing at
                   -> Word32           -- ^ count
                   -> IO ()
 bladeRFWriteFlash dev b p c = allocaBytes (fromIntegral $ p * c'BLADERF_FLASH_PAGE_SIZE) $ \bptr -> do
+  -- XXX - Buffer allocation size must be `page` * BLADERF_FLASH_PAGE_SIZE bytes or larger.
   pokeArray bptr (BS.unpack b) -- XXX can we overflow here??
   _ <- c'bladerf_write_flash (unDeviceHandle dev) bptr p c
   return () -- ignore ret

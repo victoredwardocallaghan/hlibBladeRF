@@ -96,7 +96,7 @@ bladeRFLoadFPGA dev s = do
   _ <- c'bladerf_load_fpga (unDeviceHandle dev) p
   return ()
 
--- | Obtain the bus speed at which the device is operating
+-- | Obtain the bus speed at which the device is operating.
 bladeRFDeviceSpeed :: DeviceHandle    -- ^ Device handle
                    -> IO BladeRFSpeed -- ^ Device speed
 bladeRFDeviceSpeed dev = do
@@ -156,7 +156,7 @@ bladeRFEnableModule dev m t = do
 -- modules are both disabled (and therefore, when no samples are being
 -- actively streamed). Otherwise, unexpected behavior may occur.
 bladeRFSetLoopback :: DeviceHandle    -- ^ Device handle
-                   -> BladeRFLoopback -- ^ Loopback mode. Note that 'BLADERF_LB_NONE'
+                   -> BladeRFLoopback -- ^ Loopback mode. Note that 'LB_NONE'
                                       --   disables the use of loopback functionality.
                    -> IO ()
 bladeRFSetLoopback dev l = do
