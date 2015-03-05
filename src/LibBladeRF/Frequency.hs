@@ -57,11 +57,9 @@ bladeRFGetCorrection :: DeviceHandle       -- ^ Device handle
                      -> BladeRFModule      -- ^ Module to retrieve correction information from
                      -> BladeRFCorrection  -- ^ Correction type
                      -> IO Word16          -- ^ Current value
-bladeRFGetCorrection dev m c = do
-  c <- alloca $ \pc -> do
-    c'bladerf_get_correction (unDeviceHandle dev) ((fromIntegral . fromEnum) m) ((fromIntegral . fromEnum) c) pc
-    peek pc
-  return c
+bladeRFGetCorrection dev m c = alloca $ \pc -> do
+  c'bladerf_get_correction (unDeviceHandle dev) ((fromIntegral . fromEnum) m) ((fromIntegral . fromEnum) c) pc
+  peek pc
 
 -- | Set the value of the specified configuration parameter.
 bladeRFSetCorrection :: DeviceHandle      -- ^ Device handle

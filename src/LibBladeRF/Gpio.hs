@@ -25,11 +25,9 @@ import LibBladeRF.Types
 -- | Read a configuration GPIO register.
 bladeRFConfigGPIORead :: DeviceHandle -- ^ Device handle
                       -> IO Word32    -- ^ Read data
-bladeRFConfigGPIORead dev = do
-  v <- alloca $ \pv -> do
-    c'bladerf_config_gpio_read (unDeviceHandle dev) pv
-    peek pv
-  return v
+bladeRFConfigGPIORead dev = alloca $ \pv -> do
+  c'bladerf_config_gpio_read (unDeviceHandle dev) pv
+  peek pv
 
 -- | Write a configuration GPIO register.
 --

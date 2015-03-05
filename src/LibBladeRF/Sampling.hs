@@ -45,21 +45,19 @@ bladeRFSetRationalSampleRate :: DeviceHandle           -- ^ Device handle
                              -> BladeRFRationalRate    -- ^ Rational sample rate
                              -> IO BladeRFRationalRate -- ^ Actual rational sample rate achieved.
 bladeRFSetRationalSampleRate dev m r = do
-  pr <- malloc :: IO (Ptr C'bladerf_rational_rate)
-  par <- malloc :: IO (Ptr C'bladerf_rational_rate)
   let rate = C'bladerf_rational_rate { c'bladerf_rational_rate'integer = integer r
                                      , c'bladerf_rational_rate'num     = num r
                                      , c'bladerf_rational_rate'den     = den r
                                      }
-  poke pr rate
-  c'bladerf_set_rational_sample_rate (unDeviceHandle dev) ((fromIntegral . fromEnum) m) pr par
-  ar <- peek par
+  ar <- alloca $ \pr -> do
+     poke pr rate
+     alloca $ \par -> do
+       c'bladerf_set_rational_sample_rate (unDeviceHandle dev) ((fromIntegral . fromEnum) m) pr par
+       peek par
   let actual = BladeRFRationalRate { integer = c'bladerf_rational_rate'integer ar
                                    , num     = c'bladerf_rational_rate'num ar
                                    , den     = c'bladerf_rational_rate'den ar
                                    }
-  free pr
-  free par
   return actual
 
 -- | Set the bandwidth of the LMS LPF to specified value in Hz.

@@ -41,11 +41,9 @@ bladeRFReadFlash :: DeviceHandle -- ^ Device handle
                  -> Word32       -- ^ Page to begin reading from
                  -> Word32       -- ^ Number of pages to read
                  -> IO (CInt, Word8)
-bladeRFReadFlash dev p c = do
-  bptr <- malloc :: IO (Ptr Word8)
+bladeRFReadFlash dev p c = alloca $ \bptr -> do
   ret <- c'bladerf_read_flash (unDeviceHandle dev) bptr p c
   buffer <- peek bptr
-  free bptr
   return (ret, buffer)
 
 -- | Write data from the bladeRF's SPI flash.

@@ -69,7 +69,6 @@ bladeRFSyncTx :: DeviceHandle    -- ^ Device handle
               -> Int             -- ^ Timeout (milliseconds) for this call to complete. Zero implies infinite.
               -> IO ()
 bladeRFSyncTx dev s n md t = do
-  pmd <- malloc :: IO (Ptr C'bladerf_metadata)
 -- Use the following instead when switching to ghc7.8 later..
 -- bladeRFMetadataToCBladeRFMetadata :: BladeRFMetadata -> C'bladerf_metadata
   let meta = C'bladerf_metadata { c'bladerf_metadata'timestamp    = timestamp md
@@ -78,10 +77,11 @@ bladeRFSyncTx dev s n md t = do
                                 , c'bladerf_metadata'actual_count = (fromIntegral . count) md
                                 , c'bladerf_metadata'reserved     = [0]
                                 }
-  poke pmd meta
-  BS.useAsCStringLen s $
-    \(p, _len) -> c'bladerf_sync_tx (unDeviceHandle dev) p (fromIntegral n) pmd (fromIntegral t)
-  free pmd
+  alloca $ \pmd -> do
+    poke pmd meta
+    BS.useAsCStringLen s $
+      \(p, _len) -> c'bladerf_sync_tx (unDeviceHandle dev) p (fromIntegral n) pmd (fromIntegral t)
+  return () -- XXX ignores ret
 
 -- | Receive IQ samples.
 --
@@ -92,11 +92,10 @@ bladeRFSyncRx :: DeviceHandle    -- ^ Device handle
               -> Int             -- ^ Number of samples to read
               -> Int             -- ^ Timeout (milliseconds) for this call to complete. Zero implies infinite.
               -> IO (BS.ByteString, BladeRFMetadata)
-bladeRFSyncRx dev n t = do
-  pmd <- malloc :: IO (Ptr C'bladerf_metadata)
-  ptr <- mallocBytes (4 * n)
-  c'bladerf_sync_rx (unDeviceHandle dev) ptr (fromIntegral n) pmd (fromIntegral t)
-  par <- peekArray (4 * n) ptr
+bladeRFSyncRx dev n t = alloca $ \pmd -> do
+  par <- allocaBytes (4 * n) $ \ptr -> do
+      c'bladerf_sync_rx (unDeviceHandle dev) ptr (fromIntegral n) pmd (fromIntegral t)
+      peekArray (4 * n) ptr
   let bs = BS.pack par
   cmd <- peek pmd
  -- Use the following instead when switching to ghc7.8 later..
@@ -106,5 +105,4 @@ bladeRFSyncRx dev n t = do
                              , status    = c'bladerf_metadata'status       cmd
                              , count     = fromIntegral $ c'bladerf_metadata'actual_count cmd
                              }
-  free pmd
   return (bs, meta)
