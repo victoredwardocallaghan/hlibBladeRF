@@ -18,6 +18,8 @@ module LibBladeRF.Utils ( bladeRFLibVersion
                         , bladeRFGetSerial
                         , bladeRFGetFPGASize
                         , bladeRFEnableModule
+                        , bladeRFSetLoopback
+                        , bladeRFGetLoopback
                         ) where
 
 import Foreign
@@ -143,7 +145,6 @@ bladeRFGetFPGASize dev = do
   free p
   return $ (toEnum . fromEnum) sz
 
-
 -- | Enable or disable the specified RX/TX module.
 --
 -- When a synchronous stream is associated with the specified module, this
@@ -155,3 +156,25 @@ bladeRFEnableModule :: DeviceHandle  -- ^ Device handle
 bladeRFEnableModule dev m t = do
   c'bladerf_enable_module (unDeviceHandle dev) ((fromIntegral . fromEnum) m) t
   return () -- XXX ignore ret
+
+-- | Apply specified loopback mode.
+--
+-- Loopback modes should only be enabled or disabled while the RX and TX
+-- modules are both disabled (and therefore, when no samples are being
+-- actively streamed). Otherwise, unexpected behavior may occur.
+bladeRFSetLoopback :: DeviceHandle    -- ^ Device handle
+                   -> BladeRFLoopback -- ^ Loopback mode. Note that 'BLADERF_LB_NONE'
+                                      --   disables the use of loopback functionality.
+                   -> IO ()
+bladeRFSetLoopback dev l = do
+  c'bladerf_set_loopback (unDeviceHandle dev) ((fromIntegral . fromEnum) l)
+  return () -- XXX ignore ret
+
+-- | Get current loopback mode.
+bladeRFGetLoopback :: DeviceHandle       -- ^ Device handle
+                   -> IO BladeRFLoopback -- ^ Current loopback mode
+bladeRFGetLoopback dev = do
+  l <- alloca $ \lp -> do
+    c'bladerf_get_loopback (unDeviceHandle dev) lp
+    peek lp
+  return $ (toEnum . fromEnum) l

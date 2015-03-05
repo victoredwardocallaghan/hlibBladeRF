@@ -26,6 +26,7 @@ module LibBladeRF.Types ( BladeRFVersion(..)
 --                        needs ghc >= 7.8
 --                        , bladeRFMetadataToCBladeRFMetadata
 --                        , bladeRFMetadataFromCBladeRFMetadata
+                        , BladeRFLoopback(..)
                         ) where
 
 
@@ -309,3 +310,34 @@ data BladeRFMetadata = BladeRFMetadata { timestamp :: Word64 -- ^ Free-running F
 --
 --bladeRFMetadataFromCBladeRFMetadata :: C'bladerf_metadata -> BladeRFMetadata
 --bladeRFMetadataFromCBladeRFMetadata  = to . coerce . from
+
+
+-- | Loopback options.
+data BladeRFLoopback = LB_FIRMWARE         -- ^ Firmware loopback inside of the FX3
+                     | LB_BB_TXLPF_RXVGA2  -- ^ Baseband loopback. TXLPF output is connected to the RXVGA2 input.
+                     | LB_BB_TXVGA1_RXVGA2 -- ^ Baseband loopback. TXVGA1 output is connected to the RXVGA2 input.
+                     | LB_BB_TXLPF_RXLPF   -- ^ Baseband loopback. TXLPF output is connected to the RXLPF input.
+                     | LB_BB_TXVGA1_RXLPF  -- ^ Baseband loopback. TXVGA1 output is connected to RXLPF input.
+                     | LB_RF_LNA1          -- ^ RF loopback. The TXMIX output, through the AUX PA, is connected to the
+                                           --   output of LNA1.
+                     | LB_RF_LNA2          -- ^ RF loopback. The TXMIX output, through the AUX PA, is connected to the
+                                           --   output of LNA2.
+                     | LB_RF_LNA3          -- ^ RF loopback. The TXMIX output, through the AUX PA, is connected to the
+                                           --   output of LNA3.
+                     | LB_NONE             -- ^ Disables loopback and returns to normal operation.
+                     deriving (Eq)
+
+instance Enum BladeRFLoopback where
+  fromEnum = fromJust . flip lookup loopbacks
+  toEnum   = fromJust . flip lookup (map swap loopbacks)
+
+loopbacks = [ (LB_FIRMWARE, c'BLADERF_LB_FIRMWARE)
+            , (LB_BB_TXLPF_RXVGA2, c'BLADERF_LB_BB_TXLPF_RXVGA2)
+            , (LB_BB_TXVGA1_RXVGA2, c'BLADERF_LB_BB_TXVGA1_RXVGA2)
+            , (LB_BB_TXLPF_RXLPF, c'BLADERF_LB_BB_TXLPF_RXLPF)
+            , (LB_BB_TXVGA1_RXLPF, c'BLADERF_LB_BB_TXVGA1_RXLPF)
+            , (LB_RF_LNA1, c'BLADERF_LB_RF_LNA1)
+            , (LB_RF_LNA2, c'BLADERF_LB_RF_LNA2)
+            , (LB_RF_LNA3, c'BLADERF_LB_RF_LNA3)
+            , (LB_NONE, c'BLADERF_LB_NONE)
+            ]

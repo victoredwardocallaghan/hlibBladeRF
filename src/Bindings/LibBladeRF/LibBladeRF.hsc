@@ -39,8 +39,8 @@ import Bindings.LibBladeRF.Types
 
 #ccall bladerf_enable_module , Ptr (<bladerf>) -> <bladerf_module> -> Bool -> IO CInt
 
-#ccall bladerf_set_loopback , Ptr (<bladerf>) -> <bladerf_loopback> -> CInt
-#ccall bladerf_get_loopback , Ptr (<bladerf>) -> Ptr (<bladerf_loopback>) -> CInt
+#ccall bladerf_set_loopback , Ptr (<bladerf>) -> <bladerf_loopback> -> IO CInt
+#ccall bladerf_get_loopback , Ptr (<bladerf>) -> Ptr (<bladerf_loopback>) -> IO CInt
 
 -- #ccall bladerf_set_sample_rate , Ptr (<bladerf>) -> <bladerf_module> -> CUInt -> Ptr (CUInt) -> CInt
 
