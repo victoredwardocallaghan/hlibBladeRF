@@ -23,9 +23,10 @@ import LibBladeRF.LibBladeRF
 import LibBladeRF.Types
 
 
--- | Configure the device's sample rate, in Hz.  Note this requires the sample
---   rate is an integer value of Hz.  Use bladeRFSetRationalSampleRate
---   for more arbitrary values.
+-- | Configure the device's sample rate, in Hz.
+--
+-- Note this requires the sample rate is an integer value of Hz.
+-- Use 'bladeRFSetRationalSampleRate' for more arbitrary values.
 bladeRFSetSampleRate :: DeviceHandle  -- ^ Device handle
                      -> BladeRFModule -- ^ Module to change
                      -> Int           -- ^ Sample rate
@@ -38,7 +39,8 @@ bladeRFSetSampleRate dev m r = do
   return $ fromIntegral actual
 
 -- | Configure the device's sample rate as a rational fraction of Hz.
---   Sample rates are in the form of integer + num/denom.
+--
+-- Sample rates are in the form of integer + num/denom.
 bladeRFSetRationalSampleRate :: DeviceHandle           -- ^ Device handle
                              -> BladeRFModule          -- ^ Module to change
                              -> BladeRFRationalRate    -- ^ Rational sample rate
@@ -61,7 +63,7 @@ bladeRFSetRationalSampleRate dev m r = do
   free par
   return actual
 
--- | Set the bandwidth of the LMS LPF to specified value in Hz
+-- | Set the bandwidth of the LMS LPF to specified value in Hz.
 bladeRFSetBandwidth :: DeviceHandle  -- ^ Device handle
                     -> BladeRFModule -- ^ Module for bandwidth request
                     -> Int           -- ^ Desired bandwidth

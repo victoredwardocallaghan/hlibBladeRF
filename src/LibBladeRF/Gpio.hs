@@ -6,7 +6,7 @@
   Stability   : provisional
   Portability : portable
 
-  This module GPIO configuration handling
+  This module GPIO configuration handling.
 -}
 
 module LibBladeRF.Gpio ( bladeRFConfigGPIORead
@@ -22,7 +22,7 @@ import LibBladeRF.LibBladeRF
 import LibBladeRF.Types
 
 
--- | Read a configuration GPIO register
+-- | Read a configuration GPIO register.
 bladeRFConfigGPIORead :: DeviceHandle -- ^ Device handle
                       -> IO Word32    -- ^ Read data
 bladeRFConfigGPIORead dev = do
@@ -32,10 +32,10 @@ bladeRFConfigGPIORead dev = do
   free pv
   return v
 
--- | Write a configuration GPIO register. Callers should be sure to perform a
+-- | Write a configuration GPIO register.
 --
---   read-modify-write sequence to avoid accidentally clearing other
---   GPIO bits that may be set by the library internally.
+-- Callers should be sure to perform a read-modify-write sequence to avoid
+-- accidentally clearing other GPIO bits that may be set by the library internally.
 bladeRFConfigGPIOWrite :: DeviceHandle -- ^ Device handle
                        -> Word32       -- ^ Data to write to GPIO register
                        -> IO ()

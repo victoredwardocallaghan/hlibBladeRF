@@ -38,8 +38,7 @@ import Data.Tuple
 --import Data.Coerce
 --import GHC.Generics
 
---
--- | Version structure for FPGA, firmware, libbladeRF, and associated utilities
+-- | Version structure for FPGA, firmware, libbladeRF, and associated utilities.
 data BladeRFVersion = BladeRFVersion { major :: Word16 -- ^ Major version
                                      , minor :: Word16 -- ^ Minor version
                                      , patch :: Word16 -- ^ Patch version
@@ -52,8 +51,7 @@ instance Show BladeRFVersion where
            show (patch a) ++ " (" ++
                 descr a ++ ")"
 
---
--- | Information about a bladeRF attached to the system
+-- | Information about a bladeRF attached to the system.
 data BladeRFDeviceInfo = BladeRFDeviceInfo { backend :: BladeRFBackend -- ^ Backend to use when connecting to device
                                            , serial  :: String         -- ^ Device serial number string
                                            , usbBus  :: Word8          -- ^ Bus number device is attached to
@@ -68,8 +66,7 @@ instance Show BladeRFDeviceInfo where
            " USB address: " ++ show (usbAddr a) ++ "\n" ++
            " Instance: " ++ show (inst a)
 
---
--- | FPGA device variant (size)
+-- | FPGA device variant (size).
 data BladeRFFPGASize = FPGA_UNKNOWN -- ^ Unable to determine FPGA variant
                      | FPGA_40KLE   -- ^ 40 kLE FPGA
                      | FPGA_115KLE  -- ^ 115 kLE FPGA
@@ -89,7 +86,7 @@ sizes = [ (FPGA_UNKNOWN, c'BLADERF_FPGA_UNKNOWN)
         , (FPGA_115KLE, c'BLADERF_FPGA_115KLE)
         ]
 
--- | Backend by which the host communicates with the device
+-- | Backend by which the host communicates with the device.
 data BladeRFBackend = BACKEND_ANY     -- ^ Don't Care, use any available backend
                     | BACKEND_LINUX   -- ^ Linux kernel driver
                     | BACKEND_LIBUSB  -- ^ libusb
@@ -115,14 +112,14 @@ backends = [ (BACKEND_ANY, c'BLADERF_BACKEND_ANY)
            , (BACKEND_DUMMY, c'BLADERF_BACKEND_DUMMY)
            ]
 
--- | Rational sample rate representation
+-- | Rational sample rate representation.
 data BladeRFRationalRate = BladeRFRationalRate { integer :: Word64 -- ^ Integer portion
                                                , num     :: Word64 -- ^ Numerator in fractional portion
                                                , den     :: Word64 -- ^ Denominator in fractional portion. This must be > 0.
                                                } deriving (Eq, Show)
 
 
--- | Module selection for those which have both RX and TX constituents
+-- | Module selection for those which have both RX and TX constituents.
 data BladeRFModule = MODULE_RX -- ^ Receive Module
                    | MODULE_TX -- ^ Transmit Module
                    deriving (Eq)
@@ -136,7 +133,7 @@ modules = [ (MODULE_RX, c'BLADERF_MODULE_RX)
           ]
 
 
--- | Sample format
+-- | Sample format.
 data BladeRFFormat
   {-| Signed, Complex 16-bit Q11. This is the native format of the DAC data.
 
@@ -168,10 +165,10 @@ data BladeRFFormat
      0x0c [uint32_t:  BLADERF_META_FLAG_* flags]
     @
 
-    When using the 'bladeRFSyncRx' and 'bladeRFSyncTx' actions,
-    this detail is transparent to caller. These functions take care of
-    packing/unpacking the metadata into/from the data, via the
-    bladerf_metadata structure.
+    When using the 'LibBladeRF.Sync.bladeRFSyncRx' and
+    'LibBladeRF.Sync.bladeRFSyncTx' actions, this detail is transparent to
+    caller. These functions take care of packing/unpacking the metadata
+    into/from the data, via the 'LibBladeRF.Types.BladeRFMetadata' structure.
 
     Currently, when using the asynchronous data transfer interface, the user
     is responsible for manually packing/unpacking this metadata into/from
@@ -190,7 +187,7 @@ formats = [ (FORMAT_SC16_Q11, c'BLADERF_FORMAT_SC16_Q11)
           ]
 
 
--- | LNA gain options
+-- | LNA gain options.
 data BladeRFLNAGain = LNA_GAIN_UNKNOWN -- ^ Invalid LNA gain
                     | LNA_GAIN_BYPASS  -- ^ LNA bypassed - 0dB gain
                     | LNA_GAIN_MID     -- ^ LNA Mid Gain (MAX-6dB)
@@ -207,7 +204,7 @@ lgains = [ (LNA_GAIN_UNKNOWN, c'BLADERF_LNA_GAIN_UNKNOWN)
          , (LNA_GAIN_MAX, c'BLADERF_LNA_GAIN_MAX)
          ]
 
--- | Device control and configuration
+-- | Device control and configuration.
 --
 -- This section provides functions pertaining to accessing, controlling, and
 -- configuring various device options and parameters.
@@ -235,10 +232,11 @@ vgains = [ (RXVGA1_GAIN_MIN, c'BLADERF_RXVGA1_GAIN_MIN)
          , (TXVGA2_GAIN_MAX, c'BLADERF_TXVGA2_GAIN_MAX)
          ]
 
--- | Correction parameter selection
+-- | Correction parameter selection.
 --
 -- These values specify the correction parameter to modify or query when
--- calling bladerf_set_correction() or bladerf_get_correction(). Note that the
+-- calling 'LibBladeRF.Frequency.bladeRFSetCorrection' or
+-- 'LibBladeRF.Frequency.bladeRFGetCorrection'. Note that the
 -- meaning of the `value` parameter to these functions depends upon the
 -- correction parameter.
 data BladeRFCorrection = CORR_LMS_DCOFF_I -- ^ Adjusts the in-phase DC offset via controls provided by the LMS6002D
@@ -288,7 +286,7 @@ speeds = [ (DEVICE_SPEED_UNKNOWN, c'BLADERF_DEVICE_SPEED_UNKNOWN)
          ]
 
 
--- | Sample metadata
+-- | Sample metadata.
 --
 -- This structure is used in conjunction with the 'FORMAT_SC16_Q11_META'
 -- format to TX scheduled bursts or retrieve timestamp information about
@@ -301,7 +299,7 @@ data BladeRFMetadata = BladeRFMetadata { timestamp :: Word64 -- ^ Free-running F
                                                              --   transmissions/receptions.
                                        , count     :: Int    -- ^ This output parameter is updated to reflect the actual
                                                              --   number of contiguous samples that have been populated
-                                                             --   in an RX buffer during a 'bladeRFSyncRx' call.
+                                                             --   in an RX buffer during a 'LibBladeRF.Sync.bladeRFSyncRx' call.
                                        }
 
 

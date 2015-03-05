@@ -54,18 +54,18 @@ bladeRFSyncConfig dev m f nb sz tr to = do
 --
 -- Under the hood, this call starts up an underlying asynchronous stream as
 -- needed. This stream can be stopped by disabling the TX module. (See
--- bladeRFEnableModule for more details.)
+-- 'LibBladeRF.Utils.bladeRFEnableModule' for more details.)
 --
 -- Samples will only be sent to the FPGA when a buffer have been filled. The
 -- number of samples required to fill a buffer corresponds to the `buffer_size`
--- parameter passed to bladeRFSyncConfig.
+-- parameter passed to 'bladeRFSyncConfig'.
 bladeRFSyncTx :: DeviceHandle    -- ^ Device handle
               -> BS.ByteString   -- ^ Array of samples
               -> Int             -- ^ Number of samples to write
               -> BladeRFMetadata -- ^ Sample metadata. This must be provided when using
-                                 --   the ::BLADERF_FORMAT_SC16_Q11_META format, but may
+                                 --   the 'FORMAT_SC16_Q11_META' format, but may
                                  --   be NULL when the interface is configured for
-                                 --   the ::BLADERF_FORMAT_SC16_Q11 format.
+                                 --   the 'FORMAT_SC16_Q11' format.
               -> Int             -- ^ Timeout (milliseconds) for this call to complete. Zero implies infinite.
               -> IO ()
 bladeRFSyncTx dev s n md t = do
@@ -87,7 +87,7 @@ bladeRFSyncTx dev s n md t = do
 --
 -- Underthe hood, this call starts up an underlying asynchronous stream as
 -- needed. This stream can be stopped by disabling the RX module. (See
--- bladeRFEnableModule for more details.)
+-- 'LibBladeRF.Utils.bladeRFEnableModule' for more details.)
 bladeRFSyncRx :: DeviceHandle    -- ^ Device handle
               -> Int             -- ^ Number of samples to read
               -> Int             -- ^ Timeout (milliseconds) for this call to complete. Zero implies infinite.

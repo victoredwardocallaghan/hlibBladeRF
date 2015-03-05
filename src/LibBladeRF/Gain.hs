@@ -6,7 +6,7 @@
   Stability   : provisional
   Portability : portable
 
-  This module deals with Gain control
+  This module deals with Gain control.
 -}
 
 module LibBladeRF.Gain ( -- * set,get TxVGA2
@@ -39,7 +39,7 @@ import LibBladeRF.LibBladeRF
 import LibBladeRF.Types
 
 
--- | Set the PA gain in dB
+-- | Set the PA gain in dB.
 bladeRFSetTXVGA2 :: DeviceHandle -- ^ Device handle
                  -> Int          -- ^ Desired gain
                  -> IO ()
@@ -47,7 +47,7 @@ bladeRFSetTXVGA2 dev g = do
   c'bladerf_set_txvga2 (unDeviceHandle dev) (fromIntegral g)
   return () -- ignores ret
 
--- | Get the PA gain in dB
+-- | Get the PA gain in dB.
 bladeRFGetTXVGA2 :: DeviceHandle -- ^ Device handle
                  -> IO Int       -- ^ Returned gain
 bladeRFGetTXVGA2 dev = do
@@ -57,7 +57,7 @@ bladeRFGetTXVGA2 dev = do
   free p
   return $ fromIntegral g
 
--- | Set the post-LPF gain in dB
+-- | Set the post-LPF gain in dB.
 bladeRFSetTXVGA1 :: DeviceHandle         -- ^ Device handle
                  -> BladeRFVGAGainBounds -- ^ Desired gain
                  -> IO ()
@@ -65,7 +65,7 @@ bladeRFSetTXVGA1 dev g = do
   c'bladerf_set_txvga1 (unDeviceHandle dev) ((fromIntegral . fromEnum) g)
   return () -- ignores ret
 
--- | Get the post-LPF gain in dB
+-- | Get the post-LPF gain in dB.
 bladeRFGetTXVGA1 :: DeviceHandle -- ^ Device handle
                  -> IO Int       -- ^ Returned gain
 bladeRFGetTXVGA1 dev = do
@@ -75,7 +75,7 @@ bladeRFGetTXVGA1 dev = do
   free p
   return $ fromIntegral g
 
--- | Set the post-LPF VGA gain
+-- | Set the post-LPF VGA gain.
 bladeRFSetRXVGA2 :: DeviceHandle         -- ^ Device handle
                  -> BladeRFVGAGainBounds -- ^ Desired gain
                  -> IO ()
@@ -83,7 +83,7 @@ bladeRFSetRXVGA2 dev g = do
   c'bladerf_set_rxvga2 (unDeviceHandle dev) ((fromIntegral . fromEnum) g)
   return () -- ignores ret
 
--- | Get the post-LPF VGA gain
+-- | Get the post-LPF VGA gain.
 bladeRFGetRXVGA2 :: DeviceHandle -- ^ Device handle
                  -> IO Int       -- ^ Returned set gain level
 bladeRFGetRXVGA2 dev = do

@@ -25,16 +25,16 @@ import Bindings.LibBladeRF
 import LibBladeRF.LibBladeRF
 
 
--- | Erase regions of the bladeRF's SPI flash
+-- | Erase regions of the bladeRF's SPI flash.
 --
--- This function operates in units of 64KiB erase blocks
+-- This function operates in units of 64KiB erase blocks.
 bladeRFEraseFlash :: DeviceHandle  -- ^ Device handle
                   -> Word32        -- ^ Erase block to start erasing at
                   -> Word32        -- ^ Number of blocks to erase.
                   -> IO CInt
 bladeRFEraseFlash dev b c = c'bladerf_erase_flash (unDeviceHandle dev) b c
 
--- | Read data from the bladeRF's SPI flash
+-- | Read data from the bladeRF's SPI flash.
 --
 -- This function operates in units of 256-byte pages.
 bladeRFReadFlash :: DeviceHandle -- ^ Device handle
@@ -48,7 +48,8 @@ bladeRFReadFlash dev p c = do
   free bptr
   return (ret, buffer)
 
--- | Write data from the bladeRF's SPI flash
+-- | Write data from the bladeRF's SPI flash.
+--
 -- XXX - Buffer allocation size must be `page` * BLADERF_FLASH_PAGE_SIZE bytes or larger.
 bladeRFWriteFlash :: DeviceHandle     -- ^ Device handle
                   -> BS.ByteString    -- ^ Data to write to flash

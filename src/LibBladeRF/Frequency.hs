@@ -25,7 +25,7 @@ import LibBladeRF.LibBladeRF
 import LibBladeRF.Types
 
 
--- | Write value to VCTCXO DAC
+-- | Write value to VCTCXO DAC.
 bladeRFDACWrite :: DeviceHandle -- ^ Device handle
                 -> Word16       -- ^ Data to write to DAC register
                 -> IO ()
@@ -33,7 +33,7 @@ bladeRFDACWrite dev v = do
   c'bladerf_dac_write (unDeviceHandle dev) v
   return () -- ignores ret
 
--- | Get module's current frequency in Hz
+-- | Get module's current frequency in Hz.
 bladeRFGetFrequency :: DeviceHandle  -- ^ Device handle
                     -> BladeRFModule -- ^ Module to configure
                     -> IO Int        -- ^ Returned frequency
@@ -53,7 +53,7 @@ bladeRFSetFrequency dev m f = do
   c'bladerf_set_frequency (unDeviceHandle dev) ((fromIntegral . fromEnum) m) (fromIntegral f)
   return () -- ignores ret
 
--- | Obtain the current value of the specified configuration parameter
+-- | Obtain the current value of the specified configuration parameter.
 bladeRFGetCorrection :: DeviceHandle       -- ^ Device handle
                      -> BladeRFModule      -- ^ Module to retrieve correction information from
                      -> BladeRFCorrection  -- ^ Correction type
@@ -65,7 +65,7 @@ bladeRFGetCorrection dev m c = do
   free pc
   return c
 
--- | Set the value of the specified configuration parameter
+-- | Set the value of the specified configuration parameter.
 bladeRFSetCorrection :: DeviceHandle      -- ^ Device handle
                      -> BladeRFModule     -- ^ Module to apply correction to
                      -> BladeRFCorrection -- ^ Correction type

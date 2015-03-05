@@ -29,8 +29,8 @@ import LibBladeRF.LibBladeRF
 import LibBladeRF.Types
 
 
--- | Get libbladeRF version information
--- bladeRFLibVersion :: IO BladeRFVersion
+-- | Get libbladeRF version information.
+bladeRFLibVersion :: IO BladeRFVersion
 bladeRFLibVersion = do
   p <- malloc :: IO (Ptr C'bladerf_version)
   c'bladerf_version p
@@ -44,7 +44,7 @@ bladeRFLibVersion = do
   free p
   return ver
 
--- | Query firmware version
+-- | Query firmware version.
 bladeRFFwVersion :: DeviceHandle      -- ^ Device handle
                  -> IO BladeRFVersion -- ^ Returned firmware version
 bladeRFFwVersion dev = do
@@ -60,7 +60,7 @@ bladeRFFwVersion dev = do
   free p
   return ver
 
--- | Query FPGA version
+-- | Query FPGA version.
 bladeRFFPGAVersion :: DeviceHandle      -- ^ Device handle
                    -> IO BladeRFVersion -- ^ Returned firmware version
 bladeRFFPGAVersion dev = do
@@ -85,9 +85,10 @@ bladeRFFPGAVersion dev = do
                              }
 
 
--- | Load device's FPGA. Note that this FPGA configuration will be reset
---   at the next power cycle.
--- pass Full path to FPGA bitstream
+-- | Load device's FPGA.
+--
+-- Note that this FPGA configuration will be reset at the next
+-- power cycle. Pass Full path to FPGA bitstream.
 bladeRFLoadFPGA :: DeviceHandle -- ^ Device handle
                 -> String       -- ^ Full path to FPGA bitstream
                 -> IO ()
@@ -103,7 +104,7 @@ bladeRFDeviceSpeed dev = do
   speed <- c'bladerf_device_speed (unDeviceHandle dev)
   return $ (toEnum . fromEnum) speed
 
--- | Fill out a provided bladerf_devinfo structure, given an open device handle.
+-- | Fill out a provided 'LibBladeRF.Types.BladeRFDevInfo' structure, given an open device handle.
 bladeRFGetDevInfo :: DeviceHandle         -- ^ Device handle
                   -> IO BladeRFDeviceInfo -- ^ Device information populated by this function
 bladeRFGetDevInfo dev = do
@@ -120,7 +121,7 @@ bladeRFGetDevInfo dev = do
   free p
   return info
 
--- | Query a device's serial number
+-- | Query a device's serial number.
 bladeRFGetSerial :: DeviceHandle -- ^ Device handle
                  -> IO String    -- ^ Returned serial number.
 bladeRFGetSerial dev = do
@@ -131,7 +132,7 @@ bladeRFGetSerial dev = do
   free cstring
   return serial
 
--- | Query a device's FPGA size
+-- | Query a device's FPGA size.
 bladeRFGetFPGASize :: DeviceHandle       -- ^ Device handle
                    -> IO BladeRFFPGASize -- ^ Returned on-board FPGA's size.
 bladeRFGetFPGASize dev = do
@@ -143,11 +144,12 @@ bladeRFGetFPGASize dev = do
 
 
 -- | Enable or disable the specified RX/TX module.
---   When a synchronous stream is associated with the specified module, this
---   will shut down the underlying asynchronous stream when `enable` = false.
+--
+-- When a synchronous stream is associated with the specified module, this
+-- will shut down the underlying asynchronous stream when `enable` = 'False'.
 bladeRFEnableModule :: DeviceHandle  -- ^ Device handle
                     -> BladeRFModule -- ^ Device module
-                    -> Bool          -- ^ true to enable, false to disable
+                    -> Bool          -- ^ 'True' to enable, 'False' to disable
                     -> IO ()
 bladeRFEnableModule dev m t = do
   c'bladerf_enable_module (unDeviceHandle dev) ((fromIntegral . fromEnum) m) t
