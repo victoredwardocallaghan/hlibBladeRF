@@ -14,7 +14,7 @@ maintainer:          eocallaghan@alterapraxis.com
 copyright:           (c) Edward O'Callaghan, 2015
 category:            FFI
 build-type:          Simple
--- extra-source-files:  
+extra-source-files:  ChangeLog
 cabal-version:       >=1.10
 
 --------------------------------------------
@@ -73,3 +73,4 @@ source-repository head
   type:                git
   location:            git://github.com/victoredwardocallaghan/hlibBladeRF
   branch:              master
+  tag:                 v0.1.0.1
