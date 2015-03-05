@@ -127,6 +127,7 @@ bladeRFGetSerial :: DeviceHandle -- ^ Device handle
 bladeRFGetSerial dev = do
   cstring <- mallocBytes 34 -- device serial is 33 bytes long + null terminating byte.
   -- API bug bladerf_get_serial() should be allocating the buffer itself, not the call site!
+  -- See upstream report: https://github.com/Nuand/bladeRF/issues/382
   c'bladerf_get_serial (unDeviceHandle dev) cstring
   serial <- peekCString cstring
   free cstring
