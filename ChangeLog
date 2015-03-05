@@ -1,3 +1,11 @@
+Changes in 0.1.0.2
+
+* Minor cabal file fixes.
+* Documentation fixes.
+* Remove references to 'bladerf_set_tx_gain()' missing symbol.
+* Moved from malloc to alloca usage, resolves memory leaks.
+* Provide bladeRF{Get,Set}Loopback actions and BladeRFLoopback type.
+
 Changes in 0.1.0.1
 
 * Add a change log.
