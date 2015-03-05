@@ -25,8 +25,6 @@ module LibBladeRF.Gain ( -- * set,get TxVGA2
                        , bladeRFSetLNAGain
                        , bladeRFGetLNAGain
                        -- * Optimal gain control
--- XXX symb not found!!!
---                       , bladeRFSetTXGain
                        , bladeRFSetGain
                        ) where
 
@@ -128,16 +126,6 @@ bladeRFGetLNAGain dev = do
   g <-  peek p
   free p
   return $ (toEnum . fromIntegral) g
-
---
--- | Set a combined VGA TX gain
---   This function computes the optimal TXVGA1 and TXVGA2 gains for a requested
---   amount of gain
--- XXX symb not found!!!
---bladeRFSetTXGain :: DeviceHandle -> Int -> IO ()
---bladeRFSetTXGain dev g = do
---  c'bladerf_set_tx_gain (unDeviceHandle dev) (fromIntegral g)
---  return () -- ignores ret
 
 -- | Set a combined pre and post LPF RX gain.
 --
