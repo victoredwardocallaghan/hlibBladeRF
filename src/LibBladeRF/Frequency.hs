@@ -38,10 +38,9 @@ bladeRFGetFrequency :: DeviceHandle  -- ^ Device handle
                     -> BladeRFModule -- ^ Module to configure
                     -> IO Int        -- ^ Returned frequency
 bladeRFGetFrequency dev m = do
-  pf <- malloc :: IO (Ptr CUInt)
-  c'bladerf_get_frequency (unDeviceHandle dev) ((fromIntegral . fromEnum) m) pf
-  f <- peek pf
-  free pf
+  f <- alloca $ \pf -> do
+    c'bladerf_get_frequency (unDeviceHandle dev) ((fromIntegral . fromEnum) m) pf
+    peek pf
   return $ fromIntegral f
 
 -- | Set module's frequency in Hz.
@@ -59,10 +58,9 @@ bladeRFGetCorrection :: DeviceHandle       -- ^ Device handle
                      -> BladeRFCorrection  -- ^ Correction type
                      -> IO Word16          -- ^ Current value
 bladeRFGetCorrection dev m c = do
-  pc <- malloc :: IO (Ptr Word16)
-  c'bladerf_get_correction (unDeviceHandle dev) ((fromIntegral . fromEnum) m) ((fromIntegral . fromEnum) c) pc
-  c <- peek pc
-  free pc
+  c <- alloca $ \pc -> do
+    c'bladerf_get_correction (unDeviceHandle dev) ((fromIntegral . fromEnum) m) ((fromIntegral . fromEnum) c) pc
+    peek pc
   return c
 
 -- | Set the value of the specified configuration parameter.

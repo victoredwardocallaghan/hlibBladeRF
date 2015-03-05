@@ -49,10 +49,9 @@ bladeRFSetTXVGA2 dev g = do
 bladeRFGetTXVGA2 :: DeviceHandle -- ^ Device handle
                  -> IO Int       -- ^ Returned gain
 bladeRFGetTXVGA2 dev = do
-  p <- malloc :: IO (Ptr CInt)
-  c'bladerf_get_txvga2 (unDeviceHandle dev) p
-  g <-  peek p
-  free p
+  g <- alloca $ \p -> do
+    c'bladerf_get_txvga2 (unDeviceHandle dev) p
+    peek p
   return $ fromIntegral g
 
 -- | Set the post-LPF gain in dB.
@@ -67,10 +66,9 @@ bladeRFSetTXVGA1 dev g = do
 bladeRFGetTXVGA1 :: DeviceHandle -- ^ Device handle
                  -> IO Int       -- ^ Returned gain
 bladeRFGetTXVGA1 dev = do
-  p <- malloc :: IO (Ptr CInt)
-  c'bladerf_get_txvga1 (unDeviceHandle dev) p
-  g <-  peek p
-  free p
+  g <- alloca $ \p -> do
+    c'bladerf_get_txvga1 (unDeviceHandle dev) p
+    peek p
   return $ fromIntegral g
 
 -- | Set the post-LPF VGA gain.
@@ -85,10 +83,9 @@ bladeRFSetRXVGA2 dev g = do
 bladeRFGetRXVGA2 :: DeviceHandle -- ^ Device handle
                  -> IO Int       -- ^ Returned set gain level
 bladeRFGetRXVGA2 dev = do
-  p <- malloc :: IO (Ptr CInt)
-  c'bladerf_get_rxvga2 (unDeviceHandle dev) p
-  g <-  peek p
-  free p
+  g <- alloca $ \p -> do
+    c'bladerf_get_rxvga2 (unDeviceHandle dev) p
+    peek p
   return $ fromIntegral g
 
 -- | Set the pre-LPF VGA gain.
@@ -103,10 +100,9 @@ bladeRFSetRXVGA1 dev g = do
 bladeRFGetRXVGA1 :: DeviceHandle -- ^ Device handle
                  -> IO Int       -- ^ Returned set gain level
 bladeRFGetRXVGA1 dev = do
-  p <- malloc :: IO (Ptr CInt)
-  c'bladerf_get_rxvga1 (unDeviceHandle dev) p
-  g <-  peek p
-  free p
+  g <- alloca $ \p -> do
+    c'bladerf_get_rxvga1 (unDeviceHandle dev) p
+    peek p
   return $ fromIntegral g
 
 -- | Set LNA Gain.
@@ -121,10 +117,9 @@ bladeRFSetLNAGain dev g = do
 bladeRFGetLNAGain :: DeviceHandle      -- ^ Device handle
                   -> IO BladeRFLNAGain -- ^ Returned set gain level
 bladeRFGetLNAGain dev = do
-  p <- malloc :: IO (Ptr C'bladerf_lna_gain)
-  c'bladerf_get_lna_gain (unDeviceHandle dev) p
-  g <-  peek p
-  free p
+  g <- alloca $ \p -> do
+    c'bladerf_get_lna_gain (unDeviceHandle dev) p
+    peek p
   return $ (toEnum . fromIntegral) g
 
 -- | Set a combined pre and post LPF RX gain.

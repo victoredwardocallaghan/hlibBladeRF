@@ -32,10 +32,9 @@ bladeRFSetSampleRate :: DeviceHandle  -- ^ Device handle
                      -> Int           -- ^ Sample rate
                      -> IO Int        -- ^ Actual sample rate achieved.
 bladeRFSetSampleRate dev m r = do
-  par <- malloc :: IO (Ptr CUInt)
-  c'bladerf_set_sample_rate (unDeviceHandle dev) ((fromIntegral . fromEnum) m) (fromIntegral r) par
-  actual <- peek par
-  free par
+  actual <- alloca $ \par -> do
+         c'bladerf_set_sample_rate (unDeviceHandle dev) ((fromIntegral . fromEnum) m) (fromIntegral r) par
+         peek par
   return $ fromIntegral actual
 
 -- | Configure the device's sample rate as a rational fraction of Hz.
@@ -69,8 +68,7 @@ bladeRFSetBandwidth :: DeviceHandle  -- ^ Device handle
                     -> Int           -- ^ Desired bandwidth
                     -> IO Int        -- ^ Actual bandwidth that the device was able to achieve.
 bladeRFSetBandwidth dev m b = do
-  ab <- malloc :: IO (Ptr CUInt)
-  c'bladerf_set_bandwidth (unDeviceHandle dev) ((fromIntegral . fromEnum) m) (fromIntegral b) ab
-  actual <- peek ab
-  free ab
+  actual <- alloca $ \ab -> do
+         c'bladerf_set_bandwidth (unDeviceHandle dev) ((fromIntegral . fromEnum) m) (fromIntegral b) ab
+         peek ab
   return $ fromIntegral actual

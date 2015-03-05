@@ -139,10 +139,9 @@ bladeRFGetSerial dev = do
 bladeRFGetFPGASize :: DeviceHandle       -- ^ Device handle
                    -> IO BladeRFFPGASize -- ^ Returned on-board FPGA's size.
 bladeRFGetFPGASize dev = do
-  p <- malloc :: IO (Ptr C'bladerf_fpga_size)
-  c'bladerf_get_fpga_size (unDeviceHandle dev) p
-  sz <- peek p
-  free p
+  sz <- alloca $ \p -> do
+     c'bladerf_get_fpga_size (unDeviceHandle dev) p
+     peek p
   return $ (toEnum . fromEnum) sz
 
 -- | Enable or disable the specified RX/TX module.
