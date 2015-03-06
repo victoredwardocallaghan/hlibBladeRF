@@ -1,3 +1,10 @@
+Changes in 0.1.0.3
+
+* HLint clean project.
+* When the interface is configured for the 'FORMAT_SC16_Q11'
+  format there is no metadata and so the 'bladeRFSyncTx'
+  action 'BladeRFMetadata' argument is a Maybe type.
+
 Changes in 0.1.0.2
 
 * Minor cabal file fixes.
