@@ -12,7 +12,8 @@
 -- {-# LANGUAGE Trustworthy, DeriveGeneric #-}
 {-# LANGUAGE Trustworthy #-}
 
-module LibBladeRF.Types ( BladeRFVersion(..)
+module LibBladeRF.Types ( BladeRFLogLevel(..)
+                        , BladeRFVersion(..)
                         , BladeRFDeviceInfo(..)
                         , BladeRFFPGASize(..)
                         , BladeRFBackend(..)
@@ -39,6 +40,29 @@ import Data.Maybe
 import Data.Tuple
 --import Data.Coerce
 --import GHC.Generics
+
+-- | Severity levels for logging actions
+data BladeRFLogLevel = LOG_LEVEL_VERBOSE  -- ^ Verbose level logging
+                     | LOG_LEVEL_DEBUG    -- ^ Debug level logging
+                     | LOG_LEVEL_INFO     -- ^ Information level logging
+                     | LOG_LEVEL_WARNING  -- ^ Warning level logging
+                     | LOG_LEVEL_ERROR    -- ^ Error level logging
+                     | LOG_LEVEL_CRITICAL -- ^ Fatal error level logging
+                     | LOG_LEVEL_SILENT   -- ^ No output
+                     deriving (Eq)
+
+instance Enum BladeRFLogLevel where
+  fromEnum = fromJust . flip lookup loglevels
+  toEnum   = fromJust . flip lookup (map swap loglevels)
+
+loglevels = [ (LOG_LEVEL_VERBOSE, c'BLADERF_LOG_LEVEL_VERBOSE)
+            , (LOG_LEVEL_DEBUG, c'BLADERF_LOG_LEVEL_DEBUG)
+            , (LOG_LEVEL_INFO, c'BLADERF_LOG_LEVEL_INFO)
+            , (LOG_LEVEL_WARNING, c'BLADERF_LOG_LEVEL_WARNING)
+            , (LOG_LEVEL_ERROR, c'BLADERF_LOG_LEVEL_ERROR)
+            , (LOG_LEVEL_CRITICAL, c'BLADERF_LOG_LEVEL_CRITICAL)
+            , (LOG_LEVEL_SILENT, c'BLADERF_LOG_LEVEL_SILENT)
+            ]
 
 -- | Version structure for FPGA, firmware, libbladeRF, and associated utilities.
 data BladeRFVersion = BladeRFVersion { major :: Word16 -- ^ Major version

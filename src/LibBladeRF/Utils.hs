@@ -9,7 +9,8 @@
   This module encapsulates misc libbladeRF library functions.
 -}
 
-module LibBladeRF.Utils ( bladeRFLibVersion
+module LibBladeRF.Utils ( bladeRFLogSetVerbosity
+                        , bladeRFLibVersion
                         , bladeRFFwVersion
                         , bladeRFFPGAVersion
                         , bladeRFDeviceSpeed
@@ -30,6 +31,13 @@ import Bindings.LibBladeRF
 import LibBladeRF.LibBladeRF
 import LibBladeRF.Types
 
+-- | Sets the filter level for displayed log messages.
+--
+-- Messages that are at or above the specified log level will be printed, while
+-- messages with a lower log level will be suppressed.
+bladeRFLogSetVerbosity :: BladeRFLogLevel -- ^ The new log level filter value
+                       -> IO ()
+bladeRFLogSetVerbosity l = c'bladerf_log_set_verbosity $ (fromIntegral . fromEnum) l
 
 -- internal use only
 toBladeRFVer :: C'bladerf_version -> String -> BladeRFVersion
