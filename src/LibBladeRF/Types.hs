@@ -9,7 +9,8 @@
   This module encapsulates types libbladeRF library functions.
 -}
 
-{-# LANGUAGE Trustworthy, DeriveGeneric #-}
+-- {-# LANGUAGE Trustworthy, DeriveGeneric #-}
+{-# LANGUAGE Trustworthy #-}
 
 module LibBladeRF.Types ( BladeRFVersion(..)
                         , BladeRFDeviceInfo(..)

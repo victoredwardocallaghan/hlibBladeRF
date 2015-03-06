@@ -32,7 +32,7 @@ bladeRFEraseFlash :: DeviceHandle  -- ^ Device handle
                   -> Word32        -- ^ Erase block to start erasing at
                   -> Word32        -- ^ Number of blocks to erase.
                   -> IO CInt
-bladeRFEraseFlash dev b c = c'bladerf_erase_flash (unDeviceHandle dev) b c
+bladeRFEraseFlash dev = c'bladerf_erase_flash (unDeviceHandle dev)
 
 -- | Read data from the bladeRF's SPI flash.
 --

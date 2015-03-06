@@ -31,6 +31,14 @@ import LibBladeRF.LibBladeRF
 import LibBladeRF.Types
 
 
+-- internal use only
+toBladeRFVer :: C'bladerf_version -> String -> BladeRFVersion
+toBladeRFVer brfv desc = BladeRFVersion { major = c'bladerf_version'major brfv
+                                        , minor = c'bladerf_version'minor brfv
+                                        , patch = c'bladerf_version'patch brfv
+                                        , descr = desc
+                                        }
+
 -- | Get libbladeRF version information.
 bladeRFLibVersion :: IO BladeRFVersion
 bladeRFLibVersion = do
@@ -38,12 +46,7 @@ bladeRFLibVersion = do
        c'bladerf_version p
        peek p
   desc <- peekCString $ c'bladerf_version'describe brfv
-  let ver = BladeRFVersion { major = c'bladerf_version'major brfv
-                           , minor = c'bladerf_version'minor brfv
-                           , patch = c'bladerf_version'patch brfv
-                           , descr = desc
-                           }
-  return ver
+  return $ toBladeRFVer brfv desc
 
 -- | Query firmware version.
 bladeRFFwVersion :: DeviceHandle      -- ^ Device handle
@@ -53,12 +56,7 @@ bladeRFFwVersion dev = do
        c'bladerf_fw_version (unDeviceHandle dev) p
        peek p
   desc <- peekCString $ c'bladerf_version'describe brfv
-  let ver = BladeRFVersion { major = c'bladerf_version'major brfv
-                           , minor = c'bladerf_version'minor brfv
-                           , patch = c'bladerf_version'patch brfv
-                           , descr = desc
-                           }
-  return ver
+  return $ toBladeRFVer brfv desc
 
 -- | Query FPGA version.
 bladeRFFPGAVersion :: DeviceHandle      -- ^ Device handle
@@ -70,12 +68,7 @@ bladeRFFPGAVersion dev = do
          c'bladerf_fpga_version (unDeviceHandle dev) p
          peek p
     desc <- peekCString $ c'bladerf_version'describe brfv
-    let ver = BladeRFVersion { major = c'bladerf_version'major brfv
-                             , minor = c'bladerf_version'minor brfv
-                             , patch = c'bladerf_version'patch brfv
-                             , descr = desc
-                             }
-    return ver
+    return $ toBladeRFVer brfv desc
   else
     return    BladeRFVersion { major = 0
                              , minor = 0
