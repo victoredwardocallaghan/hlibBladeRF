@@ -115,7 +115,7 @@ bladeRFGetDevInfo dev = do
 -- | Query a device's serial number.
 bladeRFGetSerial :: DeviceHandle -- ^ Device handle
                  -> IO String    -- ^ Returned serial number.
-bladeRFGetSerial dev = allocaBytes 34 $ \cstring -> do
+bladeRFGetSerial dev = allocaBytes (c'BLADERF_SERIAL_LENGTH + 1) $ \cstring -> do
   -- API bug bladerf_get_serial() should be allocating the buffer itself, not the call site!
   -- See upstream report: https://github.com/Nuand/bladeRF/issues/382
   -- device serial is 33 bytes long + null terminating byte.
