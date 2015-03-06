@@ -1,7 +1,5 @@
 module VersionInfo where
 
-import Control.Monad.IO.Class
-
 import LibBladeRF.LibBladeRF
 import LibBladeRF.Utils
 import LibBladeRF.Types
