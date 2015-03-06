@@ -59,28 +59,32 @@ bladeRFSyncConfig dev m f nb sz tr to = do
 -- Samples will only be sent to the FPGA when a buffer have been filled. The
 -- number of samples required to fill a buffer corresponds to the `buffer_size`
 -- parameter passed to 'bladeRFSyncConfig'.
-bladeRFSyncTx :: DeviceHandle    -- ^ Device handle
-              -> BS.ByteString   -- ^ Array of samples
-              -> Int             -- ^ Number of samples to write
-              -> BladeRFMetadata -- ^ Sample metadata. This must be provided when using
-                                 --   the 'FORMAT_SC16_Q11_META' format, but may
-                                 --   be NULL when the interface is configured for
-                                 --   the 'FORMAT_SC16_Q11' format.
-              -> Int             -- ^ Timeout (milliseconds) for this call to complete. Zero implies infinite.
+bladeRFSyncTx :: DeviceHandle          -- ^ Device handle
+              -> BS.ByteString         -- ^ Array of samples
+              -> Int                   -- ^ Number of samples to write
+              -> Maybe BladeRFMetadata -- ^ Sample metadata. This must be provided when using
+                                       --   the 'FORMAT_SC16_Q11_META' format, but may
+                                       --   be 'Nothing' when the interface is configured for
+                                       --   the 'FORMAT_SC16_Q11' format.
+              -> Int                   -- ^ Timeout (milliseconds) for this call to complete. Zero implies infinite.
               -> IO ()
 bladeRFSyncTx dev s n md t = do
--- Use the following instead when switching to ghc7.8 later..
--- bladeRFMetadataToCBladeRFMetadata :: BladeRFMetadata -> C'bladerf_metadata
-  let meta = C'bladerf_metadata { c'bladerf_metadata'timestamp    = timestamp md
-                                , c'bladerf_metadata'flags        = flags     md
-                                , c'bladerf_metadata'status       = status    md
-                                , c'bladerf_metadata'actual_count = (fromIntegral . count) md
-                                , c'bladerf_metadata'reserved     = [0]
-                                }
-  alloca $ \pmd -> do
-    poke pmd meta
-    BS.useAsCStringLen s $
-      \(p, _len) -> c'bladerf_sync_tx (unDeviceHandle dev) p (fromIntegral n) pmd (fromIntegral t)
+  alloca $ \pmd ->
+    case md of
+      Nothing -> BS.useAsCStringLen s $
+                   \(p, _len) -> c'bladerf_sync_tx (unDeviceHandle dev) p (fromIntegral n) nullPtr (fromIntegral t)
+      Just md -> do
+                 -- Use the following instead when switching to ghc7.8 later..
+                 -- bladeRFMetadataToCBladeRFMetadata :: BladeRFMetadata -> C'bladerf_metadata
+                 let meta = C'bladerf_metadata { c'bladerf_metadata'timestamp    = timestamp md
+                                               , c'bladerf_metadata'flags        = flags     md
+                                               , c'bladerf_metadata'status       = status    md
+                                               , c'bladerf_metadata'actual_count = (fromIntegral . count) md
+                                               , c'bladerf_metadata'reserved     = [0]
+                                               }
+                 poke pmd meta
+                 BS.useAsCStringLen s $
+                   \(p, _len) -> c'bladerf_sync_tx (unDeviceHandle dev) p (fromIntegral n) pmd (fromIntegral t)
   return () -- XXX ignores ret
 
 -- | Receive IQ samples.
@@ -98,8 +102,8 @@ bladeRFSyncRx dev n t = alloca $ \pmd -> do
       peekArray (4 * n) ptr
   let bs = BS.pack par
   cmd <- peek pmd
- -- Use the following instead when switching to ghc7.8 later..
- -- bladeRFMetadataFromCBladeRFMetadata :: C'bladerf_metadata -> BladeRFMetadata 
+  -- Use the following instead when switching to ghc7.8 later..
+  -- bladeRFMetadataFromCBladeRFMetadata :: C'bladerf_metadata -> BladeRFMetadata
   let meta = BladeRFMetadata { timestamp = c'bladerf_metadata'timestamp    cmd
                              , flags     = c'bladerf_metadata'flags        cmd
                              , status    = c'bladerf_metadata'status       cmd
