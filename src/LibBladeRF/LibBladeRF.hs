@@ -129,7 +129,7 @@ openBladeRF' :: IO (Either BladeRFError DeviceHandle)
 openBladeRF'  = alloca $ \ptr -> do
   ret <- c'bladerf_open ptr nullPtr
   if ret /= 0 then
-    return (Left BLADERF_ERR_NODEV) -- is this the right error in every case?
+    return $ (Left . toEnum . fromIntegral) ret
   else do
     pdev <- peek ptr
     return (Right (DeviceHandle pdev))
