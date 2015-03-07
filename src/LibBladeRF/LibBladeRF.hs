@@ -18,6 +18,8 @@
 module LibBladeRF.LibBladeRF ( withBladeRF
                              , DeviceHandle(..)
                              , BladeRFError(..)
+                             , bladeRFErrorValue
+                             , bladeRFErrorTy
                              ) where
 
 import Foreign
@@ -91,6 +93,16 @@ errors = [ (BLADERF_ERR_UNEXPECTED, c'BLADERF_ERR_UNEXPECTED)
          , (BLADERF_ERR_UPDATE_FW, c'BLADERF_ERR_UPDATE_FW)
          , (BLADERF_ERR_TIME_PAST, c'BLADERF_ERR_TIME_PAST)
          ]
+
+-- | (For internal use) Obtain a 'BladeRFError' type of a C value from the Error codes list.
+bladeRFErrorValue :: CInt -> Either BladeRFError Int
+bladeRFErrorValue c | c >= 0 = (Right . fromIntegral) c         -- Success (on ret == 0)
+                    | c <  0 = (Left . toEnum . fromIntegral) c -- C ret code to typed error
+
+-- | (For internal use) Obtain a 'BladeRFError' type of a C value from the Error codes list.
+bladeRFErrorTy :: CInt -> Either BladeRFError ()
+bladeRFErrorTy c | c >= 0 = return ()                        -- Success (on ret == 0)
+                 | c <  0 = (Left . toEnum . fromIntegral) c -- C ret code to typed error
 
 -- | DeviceHandle wrapper around C device descriptor pointer
 newtype DeviceHandle = DeviceHandle { unDeviceHandle :: Ptr C'bladerf }
