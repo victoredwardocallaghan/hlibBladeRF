@@ -59,6 +59,15 @@ bladeRFSyncConfig dev m f nb sz tr to = do
 -- Samples will only be sent to the FPGA when a buffer have been filled. The
 -- number of samples required to fill a buffer corresponds to the `buffer_size`
 -- parameter passed to 'bladeRFSyncConfig'.
+--
+-- Precondition:
+--
+--   1. A 'bladeRFSyncConfig' call has been to configure the device
+--      for synchronous data transfer.
+--
+--   2. A call to 'LibBladeRF.Utils.bladeRFEnableModule' should be
+--      made before attempting to transmit samples. Failing to do
+--      this may result in timeouts and other errors.
 bladeRFSyncTx :: DeviceHandle          -- ^ Device handle
               -> BS.ByteString         -- ^ Array of samples
               -> Int                   -- ^ Number of samples to write
@@ -92,6 +101,15 @@ bladeRFSyncTx dev s n md t = do
 -- Underthe hood, this call starts up an underlying asynchronous stream as
 -- needed. This stream can be stopped by disabling the RX module. (See
 -- 'LibBladeRF.Utils.bladeRFEnableModule' for more details.)
+--
+-- Precondition:
+--
+--   1. A 'bladeRFSyncConfig' call has been to configure the device
+--      for synchronous data transfer.
+--
+--   2. A call to 'LibBladeRF.Utils.bladeRFEnableModule' should be
+--      made before attempting to transmit samples. Failing to do
+--      this may result in timeouts and other errors.
 bladeRFSyncRx :: DeviceHandle    -- ^ Device handle
               -> Int             -- ^ Number of samples to read
               -> Int             -- ^ Timeout (milliseconds) for this call to complete. Zero implies infinite.
