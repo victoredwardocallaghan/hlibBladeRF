@@ -169,7 +169,7 @@ data BladeRFFormat
 
       Samples consist of interleaved IQ value pairs, with I being the first
       value in the pair. Each value in the pair is a right-aligned,
-      little-endian int16_t. The FPGA ensures that these values are
+      little-endian 'Int16'. The FPGA ensures that these values are
       sign-extended.
 
       When using this format the minimum required buffer size, in bytes, is:
