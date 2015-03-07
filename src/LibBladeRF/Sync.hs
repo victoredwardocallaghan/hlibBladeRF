@@ -70,18 +70,18 @@ bladeRFSyncConfig dev m f nb sz tr to = do
 --      this may result in timeouts and other errors.
 bladeRFSyncTx :: DeviceHandle          -- ^ Device handle
               -> BS.ByteString         -- ^ Array of samples
-              -> Int                   -- ^ Number of samples to write
               -> Maybe BladeRFMetadata -- ^ Sample metadata. This must be provided when using
                                        --   the 'FORMAT_SC16_Q11_META' format, but may
                                        --   be 'Nothing' when the interface is configured for
                                        --   the 'FORMAT_SC16_Q11' format.
               -> Int                   -- ^ Timeout (milliseconds) for this call to complete. Zero implies infinite.
               -> IO ()
-bladeRFSyncTx dev s n md t = do
+bladeRFSyncTx dev s md t = do
+  -- The number of samples to write is the length of the bytestring `div` by (|IQ|=2 * |int16_t|=2)=4
   alloca $ \pmd ->
     case md of
       Nothing -> BS.useAsCStringLen s $
-                   \(p, _len) -> c'bladerf_sync_tx (unDeviceHandle dev) p (fromIntegral n) nullPtr (fromIntegral t)
+                   \(p, len) -> c'bladerf_sync_tx (unDeviceHandle dev) p (fromIntegral $ len `div` 4) nullPtr (fromIntegral t)
       Just md -> do
                  -- Use the following instead when switching to ghc7.8 later..
                  -- bladeRFMetadataToCBladeRFMetadata :: BladeRFMetadata -> C'bladerf_metadata
@@ -93,7 +93,7 @@ bladeRFSyncTx dev s n md t = do
                                                }
                  poke pmd meta
                  BS.useAsCStringLen s $
-                   \(p, _len) -> c'bladerf_sync_tx (unDeviceHandle dev) p (fromIntegral n) pmd (fromIntegral t)
+                   \(p, len) -> c'bladerf_sync_tx (unDeviceHandle dev) p (fromIntegral $ len `div` 4) pmd (fromIntegral t)
   return () -- XXX ignores ret
 
 -- | Receive IQ samples.
