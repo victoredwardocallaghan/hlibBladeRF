@@ -1,3 +1,19 @@
+Changes in 0.1.0.4
+
+* No need to explicitly pass #. of samples to bladeRFSyncTx
+  since we already have length encoded in the ByteString.
+* Ensure we close the device resource on exception within
+  the bracket of 'withBladeRF'.
+* Generalise bladerf_open() error handling.
+* Wrap C return error codes such that they are translated
+  into typed values of BladeRFError.
+* Provide a primitives to wrap C rets.
+* Map C err values to BladeRFError type.
+* Docs - Make a note about the pre-conditions of
+  bladeRFSynx{R,T}x action calls.
+* Bind bladerf_log_set_verbosity().
+* Use 'BLADERF_SERIAL_LENGTH' const over hard-coded const '33'.
+
 Changes in 0.1.0.3
 
 * HLint clean project.
