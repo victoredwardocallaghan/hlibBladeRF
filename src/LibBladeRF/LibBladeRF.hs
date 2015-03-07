@@ -27,6 +27,8 @@ import Foreign.Ptr
 
 import Control.Exception
 import Data.Typeable (Typeable, cast)
+import Data.Maybe
+import Data.Tuple
 
 import Bindings.LibBladeRF
 
@@ -46,7 +48,7 @@ data BladeRFError = BLADERF_ERR_UNEXPECTED  -- ^ An unexpected failure occurred
                   | BLADERF_ERR_UPDATE_FPGA -- ^ An FPGA update is required
                   | BLADERF_ERR_UPDATE_FW   -- ^ A firmware update is requied
                   | BLADERF_ERR_TIME_PAST   -- ^ Requested timestamp is in the past
-                   deriving (Typeable)
+                   deriving (Eq, Typeable)
 
 instance Show BladeRFError where
   show BLADERF_ERR_UNEXPECTED  = "An unexpected failure occurred"
@@ -65,6 +67,30 @@ instance Show BladeRFError where
   show BLADERF_ERR_TIME_PAST   = "Requested timestamp is in the past"
 
 instance Exception BladeRFError
+
+-- | Returned C Error codes
+--
+-- bladeRF library routines return negative values to indicate errors.
+-- Values >= 0 are used to indicate success.
+instance Enum BladeRFError where
+  fromEnum = fromJust . flip lookup errors
+  toEnum   = fromJust . flip lookup (map swap errors)
+
+errors = [ (BLADERF_ERR_UNEXPECTED, c'BLADERF_ERR_UNEXPECTED)
+         , (BLADERF_ERR_RANGE, c'BLADERF_ERR_RANGE)
+         , (BLADERF_ERR_INVAL, c'BLADERF_ERR_INVAL)
+         , (BLADERF_ERR_MEM, c'BLADERF_ERR_MEM)
+         , (BLADERF_ERR_IO, c'BLADERF_ERR_IO)
+         , (BLADERF_ERR_TIMEOUT, c'BLADERF_ERR_TIMEOUT)
+         , (BLADERF_ERR_NODEV, c'BLADERF_ERR_NODEV)
+         , (BLADERF_ERR_UNSUPPORTED, c'BLADERF_ERR_UNSUPPORTED)
+         , (BLADERF_ERR_MISALIGNED, c'BLADERF_ERR_MISALIGNED)
+         , (BLADERF_ERR_CHECKSUM, c'BLADERF_ERR_CHECKSUM)
+         , (BLADERF_ERR_NO_FILE, c'BLADERF_ERR_NO_FILE)
+         , (BLADERF_ERR_UPDATE_FPGA, c'BLADERF_ERR_UPDATE_FPGA)
+         , (BLADERF_ERR_UPDATE_FW, c'BLADERF_ERR_UPDATE_FW)
+         , (BLADERF_ERR_TIME_PAST, c'BLADERF_ERR_TIME_PAST)
+         ]
 
 -- | DeviceHandle wrapper around C device descriptor pointer
 newtype DeviceHandle = DeviceHandle { unDeviceHandle :: Ptr C'bladerf }
