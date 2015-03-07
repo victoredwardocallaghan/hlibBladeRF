@@ -35,7 +35,7 @@ bladeRFConfigGPIORead dev = alloca $ \pv -> do
 -- accidentally clearing other GPIO bits that may be set by the library internally.
 bladeRFConfigGPIOWrite :: DeviceHandle -- ^ Device handle
                        -> Word32       -- ^ Data to write to GPIO register
-                       -> IO ()
+                       -> IO (Either BladeRFError ())
 bladeRFConfigGPIOWrite dev v = do
-  c'bladerf_config_gpio_write (unDeviceHandle dev) v
-  return () -- ignores ret
+  ret <- c'bladerf_config_gpio_write (unDeviceHandle dev) v
+  return $ bladeRFErrorTy ret

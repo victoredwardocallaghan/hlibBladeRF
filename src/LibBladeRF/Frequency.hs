@@ -28,10 +28,10 @@ import LibBladeRF.Types
 -- | Write value to VCTCXO DAC.
 bladeRFDACWrite :: DeviceHandle -- ^ Device handle
                 -> Word16       -- ^ Data to write to DAC register
-                -> IO ()
+                -> IO (Either BladeRFError ())
 bladeRFDACWrite dev v = do
-  c'bladerf_dac_write (unDeviceHandle dev) v
-  return () -- ignores ret
+  ret <- c'bladerf_dac_write (unDeviceHandle dev) v
+  return $ bladeRFErrorTy ret
 
 -- | Get module's current frequency in Hz.
 bladeRFGetFrequency :: DeviceHandle  -- ^ Device handle
@@ -47,10 +47,10 @@ bladeRFGetFrequency dev m = do
 bladeRFSetFrequency :: DeviceHandle  -- ^ Device handle
                     -> BladeRFModule -- ^ Module to configure
                     -> Int           -- ^ Desired frequency
-                    -> IO ()
+                    -> IO (Either BladeRFError ())
 bladeRFSetFrequency dev m f = do
-  c'bladerf_set_frequency (unDeviceHandle dev) ((fromIntegral . fromEnum) m) (fromIntegral f)
-  return () -- ignores ret
+  ret <- c'bladerf_set_frequency (unDeviceHandle dev) ((fromIntegral . fromEnum) m) (fromIntegral f)
+  return $ bladeRFErrorTy ret
 
 -- | Obtain the current value of the specified configuration parameter.
 bladeRFGetCorrection :: DeviceHandle       -- ^ Device handle
@@ -66,7 +66,7 @@ bladeRFSetCorrection :: DeviceHandle      -- ^ Device handle
                      -> BladeRFModule     -- ^ Module to apply correction to
                      -> BladeRFCorrection -- ^ Correction type
                      -> Word16            -- ^ Value to apply
-                     -> IO ()
+                     -> IO (Either BladeRFError ())
 bladeRFSetCorrection dev m c v = do
-  c'bladerf_set_correction (unDeviceHandle dev) ((fromIntegral . fromEnum) m) ((fromIntegral . fromEnum) c) v
-  return () -- ignores ret
+  ret <- c'bladerf_set_correction (unDeviceHandle dev) ((fromIntegral . fromEnum) m) ((fromIntegral . fromEnum) c) v
+  return $ bladeRFErrorTy ret

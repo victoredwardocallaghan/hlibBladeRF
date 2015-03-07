@@ -91,11 +91,11 @@ bladeRFFPGAVersion dev = do
 -- power cycle. Pass Full path to FPGA bitstream.
 bladeRFLoadFPGA :: DeviceHandle -- ^ Device handle
                 -> String       -- ^ Full path to FPGA bitstream
-                -> IO ()
+                -> IO (Either BladeRFError ())
 bladeRFLoadFPGA dev s = do
   p <- newCString s
-  _ <- c'bladerf_load_fpga (unDeviceHandle dev) p
-  return ()
+  ret <- c'bladerf_load_fpga (unDeviceHandle dev) p
+  return $ bladeRFErrorTy ret
 
 -- | Obtain the bus speed at which the device is operating.
 bladeRFDeviceSpeed :: DeviceHandle    -- ^ Device handle
@@ -146,10 +146,10 @@ bladeRFGetFPGASize dev = do
 bladeRFEnableModule :: DeviceHandle  -- ^ Device handle
                     -> BladeRFModule -- ^ Device module
                     -> Bool          -- ^ 'True' to enable, 'False' to disable
-                    -> IO ()
+                    -> IO (Either BladeRFError ())
 bladeRFEnableModule dev m t = do
-  c'bladerf_enable_module (unDeviceHandle dev) ((fromIntegral . fromEnum) m) t
-  return () -- XXX ignore ret
+  ret <- c'bladerf_enable_module (unDeviceHandle dev) ((fromIntegral . fromEnum) m) t
+  return $ bladeRFErrorTy ret
 
 -- | Apply specified loopback mode.
 --
@@ -159,10 +159,10 @@ bladeRFEnableModule dev m t = do
 bladeRFSetLoopback :: DeviceHandle    -- ^ Device handle
                    -> BladeRFLoopback -- ^ Loopback mode. Note that 'LB_NONE'
                                       --   disables the use of loopback functionality.
-                   -> IO ()
+                   -> IO (Either BladeRFError ())
 bladeRFSetLoopback dev l = do
-  c'bladerf_set_loopback (unDeviceHandle dev) ((fromIntegral . fromEnum) l)
-  return () -- XXX ignore ret
+  ret <- c'bladerf_set_loopback (unDeviceHandle dev) ((fromIntegral . fromEnum) l)
+  return $ bladeRFErrorTy ret
 
 -- | Get current loopback mode.
 bladeRFGetLoopback :: DeviceHandle       -- ^ Device handle
