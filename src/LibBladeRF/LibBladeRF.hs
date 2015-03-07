@@ -108,11 +108,8 @@ bladeRFErrorTy c | c >= 0 = return ()                        -- Success (on ret 
 newtype DeviceHandle = DeviceHandle { unDeviceHandle :: Ptr C'bladerf }
 
 -- | Essential wrapper
-withBladeRF :: (DeviceHandle -> IO a) -> IO ()
-withBladeRF body = do
-  dev <- openBladeRF
-  body dev
-  closeBladeRF dev
+withBladeRF :: (DeviceHandle -> IO c) -> IO c
+withBladeRF  = bracket openBladeRF closeBladeRF
 
 -- | Handy helper to wrap around Either results
 openBladeRF :: IO DeviceHandle
