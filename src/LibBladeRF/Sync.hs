@@ -75,10 +75,10 @@ bladeRFSyncTx :: DeviceHandle          -- ^ Device handle
                                        --   be 'Nothing' when the interface is configured for
                                        --   the 'FORMAT_SC16_Q11' format.
               -> Int                   -- ^ Timeout (milliseconds) for this call to complete. Zero implies infinite.
-              -> IO ()
+              -> IO (Either BladeRFError ())
 bladeRFSyncTx dev s md t = do
   -- The number of samples to write is the length of the bytestring `div` by (|IQ|=2 * |int16_t|=2)=4
-  alloca $ \pmd ->
+  ret <- alloca $ \pmd ->
     case md of
       Nothing -> BS.useAsCStringLen s $
                    \(p, len) -> c'bladerf_sync_tx (unDeviceHandle dev) p (fromIntegral $ len `div` 4) nullPtr (fromIntegral t)
@@ -94,7 +94,7 @@ bladeRFSyncTx dev s md t = do
                  poke pmd meta
                  BS.useAsCStringLen s $
                    \(p, len) -> c'bladerf_sync_tx (unDeviceHandle dev) p (fromIntegral $ len `div` 4) pmd (fromIntegral t)
-  return () -- XXX ignores ret
+  return $ bladeRFErrorTy ret
 
 -- | Receive IQ samples.
 --
@@ -113,18 +113,23 @@ bladeRFSyncTx dev s md t = do
 bladeRFSyncRx :: DeviceHandle    -- ^ Device handle
               -> Int             -- ^ Number of samples to read
               -> Int             -- ^ Timeout (milliseconds) for this call to complete. Zero implies infinite.
-              -> IO (BS.ByteString, BladeRFMetadata)
+              -> IO (Either BladeRFError (BS.ByteString, BladeRFMetadata))
 bladeRFSyncRx dev n t = alloca $ \pmd -> do
   par <- allocaBytes (4 * n) $ \ptr -> do
-      c'bladerf_sync_rx (unDeviceHandle dev) ptr (fromIntegral n) pmd (fromIntegral t)
-      peekArray (4 * n) ptr
-  let bs = BS.pack par
-  cmd <- peek pmd
-  -- Use the following instead when switching to ghc7.8 later..
-  -- bladeRFMetadataFromCBladeRFMetadata :: C'bladerf_metadata -> BladeRFMetadata
-  let meta = BladeRFMetadata { timestamp = c'bladerf_metadata'timestamp    cmd
-                             , flags     = c'bladerf_metadata'flags        cmd
-                             , status    = c'bladerf_metadata'status       cmd
-                             , count     = fromIntegral $ c'bladerf_metadata'actual_count cmd
-                             }
-  return (bs, meta)
+      ret <- c'bladerf_sync_rx (unDeviceHandle dev) ptr (fromIntegral n) pmd (fromIntegral t)
+      if ret < 0 then (return . Left . toEnum . fromIntegral) ret -- C ret code to typed error
+      else (return . Right) $ peekArray (4 * n) ptr
+  case par of
+    Left ret -> (return . Left) ret
+    Right par' -> do
+      par'' <- par'
+      let bs = BS.pack par''
+      cmd <- peek pmd
+      -- Use the following instead when switching to ghc7.8 later..
+      -- bladeRFMetadataFromCBladeRFMetadata :: C'bladerf_metadata -> BladeRFMetadata
+      let meta = BladeRFMetadata { timestamp = c'bladerf_metadata'timestamp    cmd
+                                 , flags     = c'bladerf_metadata'flags        cmd
+                                 , status    = c'bladerf_metadata'status       cmd
+                                 , count     = fromIntegral $ c'bladerf_metadata'actual_count cmd
+                                 }
+      return $ Right (bs, meta)
