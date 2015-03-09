@@ -34,14 +34,14 @@ bladeRFDACWrite dev v = do
   return $ bladeRFErrorTy ret
 
 -- | Get module's current frequency in Hz.
-bladeRFGetFrequency :: DeviceHandle  -- ^ Device handle
-                    -> BladeRFModule -- ^ Module to configure
-                    -> IO Int        -- ^ Returned frequency
-bladeRFGetFrequency dev m = do
-  f <- alloca $ \pf -> do
-    c'bladerf_get_frequency (unDeviceHandle dev) ((fromIntegral . fromEnum) m) pf
-    peek pf
-  return $ fromIntegral f
+bladeRFGetFrequency :: DeviceHandle               -- ^ Device handle
+                    -> BladeRFModule              -- ^ Module to configure
+                    -> IO (BladeRFReturnType Int) -- ^ Returned frequency
+bladeRFGetFrequency dev m = alloca $ \pf -> do
+    ret <- c'bladerf_get_frequency (unDeviceHandle dev) ((fromIntegral . fromEnum) m) pf
+    if ret < 0 then (return . Left . toEnum . fromIntegral) ret -- C ret code to typed error
+    else do freq <- peek pf
+            (return . Right . fromIntegral) freq
 
 -- | Set module's frequency in Hz.
 bladeRFSetFrequency :: DeviceHandle  -- ^ Device handle
@@ -53,13 +53,15 @@ bladeRFSetFrequency dev m f = do
   return $ bladeRFErrorTy ret
 
 -- | Obtain the current value of the specified configuration parameter.
-bladeRFGetCorrection :: DeviceHandle       -- ^ Device handle
-                     -> BladeRFModule      -- ^ Module to retrieve correction information from
-                     -> BladeRFCorrection  -- ^ Correction type
-                     -> IO Word16          -- ^ Current value
+bladeRFGetCorrection :: DeviceHandle                  -- ^ Device handle
+                     -> BladeRFModule                 -- ^ Module to retrieve correction information from
+                     -> BladeRFCorrection             -- ^ Correction type
+                     -> IO (BladeRFReturnType Word16) -- ^ Current value
 bladeRFGetCorrection dev m c = alloca $ \pc -> do
-  c'bladerf_get_correction (unDeviceHandle dev) ((fromIntegral . fromEnum) m) ((fromIntegral . fromEnum) c) pc
-  peek pc
+  ret <- c'bladerf_get_correction (unDeviceHandle dev) ((fromIntegral . fromEnum) m) ((fromIntegral . fromEnum) c) pc
+  if ret < 0 then (return . Left . toEnum . fromIntegral) ret -- C ret code to typed error
+  else do corr <- peek pc
+          (return . Right) corr
 
 -- | Set the value of the specified configuration parameter.
 bladeRFSetCorrection :: DeviceHandle      -- ^ Device handle
