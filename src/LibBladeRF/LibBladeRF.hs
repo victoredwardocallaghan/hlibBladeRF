@@ -18,6 +18,7 @@
 module LibBladeRF.LibBladeRF ( withBladeRF
                              , DeviceHandle(..)
                              , BladeRFError(..)
+                             , BladeRFReturnType(..)
                              , bladeRFErrorValue
                              , bladeRFErrorTy
                              ) where
@@ -95,14 +96,17 @@ errors = [ (BLADERF_ERR_UNEXPECTED, c'BLADERF_ERR_UNEXPECTED)
          ]
 
 -- | (For internal use) Obtain a 'BladeRFError' type of a C value from the Error codes list.
-bladeRFErrorValue :: CInt -> Either BladeRFError Int
+bladeRFErrorValue :: CInt -> BladeRFReturnType Int
 bladeRFErrorValue c | c >= 0 = (Right . fromIntegral) c         -- Success (on ret == 0)
                     | c <  0 = (Left . toEnum . fromIntegral) c -- C ret code to typed error
 
 -- | (For internal use) Obtain a 'BladeRFError' type of a C value from the Error codes list.
-bladeRFErrorTy :: CInt -> Either BladeRFError ()
+bladeRFErrorTy :: CInt -> BladeRFReturnType ()
 bladeRFErrorTy c | c >= 0 = return ()                        -- Success (on ret == 0)
                  | c <  0 = (Left . toEnum . fromIntegral) c -- C ret code to typed error
+
+-- | Short-hand type for brevity and clarity.
+type BladeRFReturnType a = Either BladeRFError a
 
 -- | DeviceHandle wrapper around C device descriptor pointer
 newtype DeviceHandle = DeviceHandle { unDeviceHandle :: Ptr C'bladerf }
@@ -122,7 +126,7 @@ openBladeRF = do
 -- Open specified device using a device identifier string.
 -- See bladerf_open_with_devinfo() if a device identifier string
 -- is not readily available.
-openBladeRF' :: IO (Either BladeRFError DeviceHandle)
+openBladeRF' :: IO (BladeRFReturnType DeviceHandle)
 openBladeRF'  = alloca $ \ptr -> do
   ret <- c'bladerf_open ptr nullPtr
   if ret /= 0 then
