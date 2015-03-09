@@ -1,3 +1,13 @@
+Changes in 0.1.0.5
+
+* Provide 'BladeRFReturnType' type-alias and replace 'Either BladeRFError a'
+  with 'BladeRFReturnType a'. For brevity and clarity, use a type-alias to
+  wrap the Either error or result context in the return type of the
+  bindings various IO actions.
+* Sync.hs: Handle bladerf_sync_{t,r}x return err codes. Deal with possible
+  return error codes from the C functions, wrapping them in the
+  Either context mapped to the 'BladeRFError' type.
+
 Changes in 0.1.0.4
 
 * No need to explicitly pass #. of samples to bladeRFSyncTx
