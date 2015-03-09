@@ -40,7 +40,7 @@ import LibBladeRF.Types
 -- | Set the PA gain in dB.
 bladeRFSetTXVGA2 :: DeviceHandle -- ^ Device handle
                  -> Int          -- ^ Desired gain
-                 -> IO (Either BladeRFError ())
+                 -> IO (BladeRFReturnType ())
 bladeRFSetTXVGA2 dev g = do
   ret <- c'bladerf_set_txvga2 (unDeviceHandle dev) (fromIntegral g)
   return $ bladeRFErrorTy ret
@@ -57,7 +57,7 @@ bladeRFGetTXVGA2 dev = do
 -- | Set the post-LPF gain in dB.
 bladeRFSetTXVGA1 :: DeviceHandle         -- ^ Device handle
                  -> BladeRFVGAGainBounds -- ^ Desired gain
-                 -> IO (Either BladeRFError ())
+                 -> IO (BladeRFReturnType ())
 bladeRFSetTXVGA1 dev g = do
   ret <- c'bladerf_set_txvga1 (unDeviceHandle dev) ((fromIntegral . fromEnum) g)
   return $ bladeRFErrorTy ret
@@ -74,7 +74,7 @@ bladeRFGetTXVGA1 dev = do
 -- | Set the post-LPF VGA gain.
 bladeRFSetRXVGA2 :: DeviceHandle         -- ^ Device handle
                  -> BladeRFVGAGainBounds -- ^ Desired gain
-                 -> IO (Either BladeRFError ())
+                 -> IO (BladeRFReturnType ())
 bladeRFSetRXVGA2 dev g = do
   ret <- c'bladerf_set_rxvga2 (unDeviceHandle dev) ((fromIntegral . fromEnum) g)
   return $ bladeRFErrorTy ret
@@ -91,7 +91,7 @@ bladeRFGetRXVGA2 dev = do
 -- | Set the pre-LPF VGA gain.
 bladeRFSetRXVGA1 :: DeviceHandle         -- ^ Device handle
                  -> BladeRFVGAGainBounds -- ^ Desired gain
-                 -> IO (Either BladeRFError ())
+                 -> IO (BladeRFReturnType ())
 bladeRFSetRXVGA1 dev g = do
   ret <- c'bladerf_set_rxvga1 (unDeviceHandle dev) ((fromIntegral . fromEnum) g)
   return $ bladeRFErrorTy ret
@@ -108,7 +108,7 @@ bladeRFGetRXVGA1 dev = do
 -- | Set LNA Gain.
 bladeRFSetLNAGain :: DeviceHandle   -- ^ Device handle
                   -> BladeRFLNAGain -- ^ Desired gain level
-                  -> IO (Either BladeRFError ())
+                  -> IO (BladeRFReturnType ())
 bladeRFSetLNAGain dev g = do
   ret <- c'bladerf_set_lna_gain (unDeviceHandle dev) ((fromIntegral . fromEnum) g)
   return $ bladeRFErrorTy ret
@@ -130,7 +130,7 @@ bladeRFGetLNAGain dev = do
 bladeRFSetGain :: DeviceHandle  -- ^ Device handle
                -> BladeRFModule -- ^ Module
                -> Int           -- ^ Desired gain
-               -> IO (Either BladeRFError ())
+               -> IO (BladeRFReturnType ())
 bladeRFSetGain dev m g = do
   ret <- c'bladerf_set_gain (unDeviceHandle dev) ((fromIntegral . fromEnum) m) (fromIntegral g)
   return $ bladeRFErrorTy ret

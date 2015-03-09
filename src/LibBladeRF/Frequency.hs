@@ -28,7 +28,7 @@ import LibBladeRF.Types
 -- | Write value to VCTCXO DAC.
 bladeRFDACWrite :: DeviceHandle -- ^ Device handle
                 -> Word16       -- ^ Data to write to DAC register
-                -> IO (Either BladeRFError ())
+                -> IO (BladeRFReturnType ())
 bladeRFDACWrite dev v = do
   ret <- c'bladerf_dac_write (unDeviceHandle dev) v
   return $ bladeRFErrorTy ret
@@ -47,7 +47,7 @@ bladeRFGetFrequency dev m = do
 bladeRFSetFrequency :: DeviceHandle  -- ^ Device handle
                     -> BladeRFModule -- ^ Module to configure
                     -> Int           -- ^ Desired frequency
-                    -> IO (Either BladeRFError ())
+                    -> IO (BladeRFReturnType ())
 bladeRFSetFrequency dev m f = do
   ret <- c'bladerf_set_frequency (unDeviceHandle dev) ((fromIntegral . fromEnum) m) (fromIntegral f)
   return $ bladeRFErrorTy ret
@@ -66,7 +66,7 @@ bladeRFSetCorrection :: DeviceHandle      -- ^ Device handle
                      -> BladeRFModule     -- ^ Module to apply correction to
                      -> BladeRFCorrection -- ^ Correction type
                      -> Word16            -- ^ Value to apply
-                     -> IO (Either BladeRFError ())
+                     -> IO (BladeRFReturnType ())
 bladeRFSetCorrection dev m c v = do
   ret <- c'bladerf_set_correction (unDeviceHandle dev) ((fromIntegral . fromEnum) m) ((fromIntegral . fromEnum) c) v
   return $ bladeRFErrorTy ret

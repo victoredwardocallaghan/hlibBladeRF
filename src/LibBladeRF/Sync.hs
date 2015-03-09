@@ -44,8 +44,7 @@ bladeRFSyncConfig :: DeviceHandle  -- ^ Device handle
                   -> Int           -- ^ The size of the underlying stream buffers, in samples. This value must be a multiple of 1024.
                   -> Int           -- ^ The number of active USB transfers that may be in-flight at any given time.
                   -> Int           -- ^ Timeout (milliseconds) for transfers in the underlying data stream.
-                  -> IO (Either BladeRFError ())
-
+                  -> IO (BladeRFReturnType ())
 bladeRFSyncConfig dev m f nb sz tr to = do
   ret <- c'bladerf_sync_config (unDeviceHandle dev) ((fromIntegral . fromEnum) m) ((fromIntegral . fromEnum) f) (fromIntegral nb) (fromIntegral sz) (fromIntegral tr) (fromIntegral to)
   return $ bladeRFErrorTy ret
@@ -75,7 +74,7 @@ bladeRFSyncTx :: DeviceHandle          -- ^ Device handle
                                        --   be 'Nothing' when the interface is configured for
                                        --   the 'FORMAT_SC16_Q11' format.
               -> Int                   -- ^ Timeout (milliseconds) for this call to complete. Zero implies infinite.
-              -> IO (Either BladeRFError ())
+              -> IO (BladeRFReturnType ())
 bladeRFSyncTx dev s md t = do
   -- The number of samples to write is the length of the bytestring `div` by (|IQ|=2 * |int16_t|=2)=4
   ret <- alloca $ \pmd ->
@@ -113,7 +112,7 @@ bladeRFSyncTx dev s md t = do
 bladeRFSyncRx :: DeviceHandle    -- ^ Device handle
               -> Int             -- ^ Number of samples to read
               -> Int             -- ^ Timeout (milliseconds) for this call to complete. Zero implies infinite.
-              -> IO (Either BladeRFError (BS.ByteString, BladeRFMetadata))
+              -> IO (BladeRFReturnType (BS.ByteString, BladeRFMetadata))
 bladeRFSyncRx dev n t = alloca $ \pmd -> do
   par <- allocaBytes (4 * n) $ \ptr -> do
       ret <- c'bladerf_sync_rx (unDeviceHandle dev) ptr (fromIntegral n) pmd (fromIntegral t)

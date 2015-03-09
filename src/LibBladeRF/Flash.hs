@@ -31,7 +31,7 @@ import LibBladeRF.LibBladeRF
 bladeRFEraseFlash :: DeviceHandle  -- ^ Device handle
                   -> Word32        -- ^ Erase block to start erasing at
                   -> Word32        -- ^ Number of blocks to erase.
-                  -> IO (Either BladeRFError ())
+                  -> IO (BladeRFReturnType ())
 bladeRFEraseFlash dev b n = do
   ret <- c'bladerf_erase_flash (unDeviceHandle dev) b n
   return $ bladeRFErrorTy ret
@@ -53,7 +53,7 @@ bladeRFWriteFlash :: DeviceHandle     -- ^ Device handle
                   -> BS.ByteString    -- ^ Data to write to flash
                   -> Word32           -- ^ page  Page to begin writing at
                   -> Word32           -- ^ count
-                  -> IO (Either BladeRFError ())
+                  -> IO (BladeRFReturnType ())
 bladeRFWriteFlash dev b p c = allocaBytes (fromIntegral $ p * c'BLADERF_FLASH_PAGE_SIZE) $ \bptr -> do
   -- XXX - Buffer allocation size must be `page` * BLADERF_FLASH_PAGE_SIZE bytes or larger.
   pokeArray bptr (BS.unpack b) -- XXX can we overflow here??
