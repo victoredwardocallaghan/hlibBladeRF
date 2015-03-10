@@ -1,5 +1,10 @@
 Changes in 0.1.0.5
 
+* LibBladeRF/Gpio.hs: Type BladeRFGPIOFlags and handle C ret err codes.
+* Handle bladeRFGet{Correction,Frequency} C ret err codes.
+
+Changes in 0.1.0.5
+
 * Provide 'BladeRFReturnType' type-alias and replace 'Either BladeRFError a'
   with 'BladeRFReturnType a'. For brevity and clarity, use a type-alias to
   wrap the Either error or result context in the return type of the

@@ -2,7 +2,7 @@
 -- documentation, see http://haskell.org/cabal/users-guide/
 
 name:                hlibBladeRF
-version:             0.1.0.5
+version:             0.1.0.6
 synopsis:            Haskell binding to libBladeRF SDR library
 description:         IO Monadic binding for libbladeRF software defined radio.
 homepage:            https://victoredwardocallaghan.github.io/hlibBladeRF
@@ -77,4 +77,4 @@ source-repository head
   type:                git
   location:            git://github.com/victoredwardocallaghan/hlibBladeRF
   branch:              master
-  tag:                 v0.1.0.5
+  tag:                 v0.1.0.6
