@@ -16,6 +16,7 @@
 {-# OPTIONS_HADDOCK prune #-}
 
 module LibBladeRF.LibBladeRF ( withBladeRF
+                             , openBladeRF
                              , DeviceHandle(..)
                              , BladeRFError(..)
                              , BladeRFReturnType(..)
