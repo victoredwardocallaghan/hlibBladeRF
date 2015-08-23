@@ -117,12 +117,13 @@ bladeRFSyncRx dev n t = alloca $ \pmd -> do
   par <- allocaBytes (4 * n) $ \ptr -> do
       ret <- c'bladerf_sync_rx (unDeviceHandle dev) ptr (fromIntegral n) pmd (fromIntegral t)
       if ret < 0 then (return . Left . toEnum . fromIntegral) ret -- C ret code to typed error
-      else (return . Right) $ peekArray (4 * n) ptr
+      else do
+          ret <- peekArray (4 * n) ptr
+          return $ Right ret
   case par of
-    Left ret -> (return . Left) ret
+    Left ret -> return $ Left ret
     Right par' -> do
-      par'' <- par'
-      let bs = BS.pack par''
+      let bs = BS.pack par'
       cmd <- peek pmd
       -- Use the following instead when switching to ghc7.8 later..
       -- bladeRFMetadataFromCBladeRFMetadata :: C'bladerf_metadata -> BladeRFMetadata
