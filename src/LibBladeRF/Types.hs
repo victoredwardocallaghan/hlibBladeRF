@@ -327,6 +327,7 @@ data BladeRFMetadata = BladeRFMetadata { timestamp :: Word64 -- ^ Free-running F
                                                              --   number of contiguous samples that have been populated
                                                              --   in an RX buffer during a 'LibBladeRF.Sync.bladeRFSyncRx' call.
                                        }
+                                       deriving (Show)
 
 
 -- | Loopback options.
